@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - Ethereum Voting Dapp</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h1>Login</h1>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="voter-id">Voter ID</label>
+        <input type="text" class="form-control" id="voter-id" name="voter-id">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password">
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </div>
+
+  <script src="../dist/login.bundle.js" type="module"></script>
+</body>
+
+</html>

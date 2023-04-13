@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin portal</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    
+  </head>
+  <body>
+    <div id="head" class="text-center">
+      <h1>Ethereum Voting Dapp</h1>
+      <hr/>
+      <br/> 
+    </div>
+
+    <div class="container">
+     <legend>Add Candidate</legend>  
+     <table  class="table text-center"> 
+              <tr>
+                <th>Name </th><td>  <input id="name" type="text" name="name" placeholder ="Candidates name"></td>  
+                <th>Party</th><td><input id="party" type="text" name="party" placeholder ="Candidates party"></td> 
+              </tr>
+      </table> 
+      <input id="addCandidate" type="submit" name="submit" value="Add Candidate">
+      <p id="Aday"></p>
+    </div>
+
+    <div class="container">
+     <legend>Define Voting Dates</legend>  
+     <table  class="table text-center"> 
+              <tr>              
+                <th>Start date</th><td><input id="startDate" type="date" name=""></td>
+                <th>End date</th><td>    <input id="endDate" type="date" name="" ></td>
+              </tr>
+      </table> 
+      <input id="addDate" type="submit" name="submit" value="Define Dates">
+      <p id="Aday"></p>
+    </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+  <script src="../dist/app.bundle.js" type="module"></script>
+  </body>
+</html>
