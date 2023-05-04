@@ -1,16 +1,14 @@
-require('dotenv').config();
-console.log(process.env);
 const loginForm = document.getElementById('loginForm');
-const token = 'process.env';
-const headers = {
-  'Authorization': `Bearer ${token}`,
-};
 
 loginForm.addEventListener('submit', (event) => {
   event.preventDefault();
 
   const voter_id = document.getElementById('voter-id').value;
   const password = document.getElementById('password').value;
+  const token = voter_id;
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+  };
 
   fetch(`http://127.0.0.1:8000/get-role?voter_id=${voter_id}&password=${password}`, { headers })
   .then(response => response.json())
