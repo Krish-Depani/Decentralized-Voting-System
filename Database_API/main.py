@@ -52,7 +52,7 @@ except mysql.connector.Error as err:
 async def authenticate(request):
     try:
         api_key = request.headers.get('authorization').replace("Bearer ", "")
-        cursor.execute("SELECT * FROM api_keys WHERE api_key = %s", (api_key,))
+        cursor.execute("SELECT * FROM voters WHERE voter_id = %s", (api_key,))
         if api_key not in cursor.fetchall()[0]:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
