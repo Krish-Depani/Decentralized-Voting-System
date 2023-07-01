@@ -1,4 +1,4 @@
-# Import required modules
+  # Import required modules
 import dotenv
 import os
 import mysql.connector
@@ -6,18 +6,21 @@ from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from mysql.connector import errorcode
-from pydantic import BaseModel
+import jwt
 
-#loading the environment variables
+# Loading the environment variables
 dotenv.load_dotenv()
 
-# Initialize the todoapi
+# Initialize the todoapi app
 app = FastAPI()
 
+# Define the allowed origins for CORS
 origins = [
     "http://localhost:8080",
+    "http://127.0.0.1:8080",
 ]
 
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -25,11 +28,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Define the To-do task model
-class Task(BaseModel):
-    task: str
-    done: bool
 
 # Connect to the MySQL database
 try:
@@ -49,25 +47,47 @@ except mysql.connector.Error as err:
         print(err)
 
 # Define the authentication middleware
-async def authenticate(request):
+async def authenticate(request: Request):
     try:
         api_key = request.headers.get('authorization').replace("Bearer ", "")
         cursor.execute("SELECT * FROM voters WHERE voter_id = %s", (api_key,))
-        if api_key not in cursor.fetchall()[0]:
+        if api_key not in [row[0] for row in cursor.fetchall()]:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Forbidden"
             )
     except:
         raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Forbidden"
-            )
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Forbidden"
+        )
 
-# Define the GET endpoint to retrieve all tasks
-@app.get("/get-role")
-async def read_tasks(request: Request, voter_id: str, password: str):
+# Define the POST endpoint for login
+@app.get("/login")
+async def login(request: Request, voter_id: str, password: str):
     await authenticate(request)
-    cursor.execute("SELECT role FROM voters WHERE voter_id = %s AND password = %s", (voter_id, password,))
-    role = {'role': cursor.fetchall()[0][0]}
-    return role
+    role = await get_role(voter_id, password)
+
+    # Assuming authentication is successful, generate a token
+    token = jwt.encode({'password': password, 'voter_id': voter_id, 'role': role}, os.environ['SECRET_KEY'], algorithm='HS256')
+
+    return {'token': token, 'role': role}
+
+# Replace 'admin' with the actual role based on authentication
+async def get_role(voter_id, password):
+    try:
+        cursor.execute("SELECT role FROM voters WHERE voter_id = %s AND password = %s", (voter_id, password,))
+        role = cursor.fetchone()
+        if role:
+            return role[0]
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid voter id or password"
+            )
+    except mysql.connector.Error as err:
+        print(err)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database error"
+        )

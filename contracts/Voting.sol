@@ -59,5 +59,4 @@ contract Voting {
     function getDates() public view returns (uint256,uint256) {
       return (votingStart,votingEnd);
     }
-    
 }
