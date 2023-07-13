@@ -1,21 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ethereum Voting Dapp</title>
+    <title>Voting Page</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-
+    <link rel="stylesheet" type="text/css" href="../css/index.css">
     
   </head>
   <body>
     <div id="head" class="text-center">
-      <h1>Ethereum Voting Dapp</h1>
-      <p> Welcome for Voting</p>
-      <p>Voting Dates: <span id="dates"></span></p>
-      <hr/>
+      <h1 align="center">Decentralized Voting Using Ethereum Blockchain</h1>
+      <h2 align="center">Welcome for Voting</h2> 
+      <h3 align="center"><p>Voting Dates: <span id="dates"></span></p></h3>
       <br/> 
     </div>
     <div id="candidate" class="container"> 
@@ -29,7 +28,6 @@
         </thead>
         <tbody id="boxCandidate"></tbody>
       </table>
-      <hr/>
       <br/>
     </div>
     <div id="vote"class="container text-center">
@@ -37,20 +35,14 @@
       <button id="voteButton" class="btn btn-primary" onclick="App.vote()" disabled>Vote</button>
       <div id="msg"></div>
 
-      <hr/>
-
       <div id="vote-box"></div>
     </div>
-
-    <hr/>    
+  
     <div id="account">
           <p id="accountAddress" class="text-center"></p>
     </div>
-
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
   <script src="../dist/app.bundle.js" type="module"></script>
   </body>
 </html>

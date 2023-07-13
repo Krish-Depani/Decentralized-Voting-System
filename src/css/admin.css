@@ -1,0 +1,113 @@
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  background: url('../assets/eth5.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.container {
+  width: 1100px;
+  height: 150px;
+  max-width: 1100px;
+  background-color: rgba(0, 0, 0, 0.65);
+  padding: 40px;
+  border-radius: 5px;
+  box-shadow: 0px 3px 10px rgba(255, 255, 255, 0.1);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 32px;
+  color: #ffffff;
+  margin-bottom: 30px;
+}
+
+legend {
+  font-size: 24px;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.table {
+  width: 80%;
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.650);
+  border-radius: 5px;
+}
+
+th {
+  font-size: 18px;
+  color: #000000;
+}
+
+td {
+  font-size: 16px;
+  color: #000000;
+}
+
+input[type="text"],
+input[type="date"] {
+  width: 90%;
+  padding: 12px;
+  border: 50px;
+  border-radius: 5px;
+  font-size: 18px;
+  color: #000000;
+  background-color: rgb(255, 255, 255);
+}
+
+input[type="submit"] {
+  width: 30%;
+  padding: 12px;
+  background-color: #198a7b;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 19px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #44afa1;
+}
+
+input[type="submit"]:focus {
+  outline: none;
+}
+
+input[type="submit"]:active {
+  transform: translateY(2px);
+}
+
+#Aday {
+  font-size: 18px;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+}
+.container {
+  /* ... */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.table {
+  width: 80%;
+  margin: 0 auto; /* Add this line to center the table horizontally */
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.650);
+  border-radius: 5px;
+}

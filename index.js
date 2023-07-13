@@ -35,6 +35,22 @@ app.get('/js/login.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'src/js/login.js'))
 });
 
+app.get('/css/login.css', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src/css/login.css'))
+});
+
+app.get('/css/index.css', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src/css/index.css'))
+});
+
+app.get('/css/admin.css', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src/css/admin.css'))
+});
+
+app.get('/assets/eth5.jpg', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src/assets/eth5.jpg'))
+});
+
 app.get('/js/app.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'src/js/app.js'))
 });
