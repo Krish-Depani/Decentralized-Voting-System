@@ -16,7 +16,9 @@ body {
     max-width: 900px;
     background-color: rgba(0, 0, 0, 0.650);
     padding: 40px;
-    border-radius: 0px;
+    padding-bottom: 2%;
+    padding-top: 2%;
+    border-radius: 5px;
     box-shadow: 0px 3px 10px rgba(255, 255, 255, 0.1);
     text-align: center;
   }
@@ -45,7 +47,9 @@ body {
     width: 100%;
     margin-bottom: 20px;
     background-color: rgba(124, 123, 123, 0.65);
-    border-radius: 10px;
+    border-radius: 5px;
+    border-collapse: separate;
+    border-spacing: 25px;
   }
   
   th {
@@ -56,6 +60,7 @@ body {
   td {
     font-size: 16px;
     color: #ffffff;
+    row-gap: 100%;
   }
   
   #voteButton {
