@@ -48,6 +48,13 @@
 
 9. In the database created, create new table named <b>voters</b> in the given format and add some values.
 
+           CREATE TABLE voters (
+           voter_id VARCHAR(36) PRIMARY KEY NOT NULL,
+           role ENUM('admin', 'user') NOT NULL,
+           password VARCHAR(255) NOT NULL
+           );
+   <br>
+
         +--------------------------------------+-------+-----------+
         | voter_id                             | role  | password  |
         +--------------------------------------+-------+-----------+
@@ -145,4 +152,5 @@ For more info about usage checkout [YouTube video](https://www.youtube.com/watch
 
 The code in this repository is licensed under the MIT License. This means that you are free to use, modify, and distribute the code, as long as you include the original copyright and license notice. For more information about LICENSE please click [here](https://github.com/Krish-Depani/Decentralized-Voting-System-Using-Ethereum-Blockchain/blob/main/LICENSE).
 
-## Thanks for checking out!!
+## If you like this project, please give it a 🌟.
+## Thank you 😊.
