@@ -84,7 +84,7 @@
 
 2. Start the node server server
     
-        npm index.js
+        node index.js
 
 3. Navigate to `Database_API` folder in another terminal
     
