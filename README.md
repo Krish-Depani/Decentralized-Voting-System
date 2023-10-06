@@ -64,20 +64,14 @@
 12. Install truffle globally
     
         npm install -g truffle
-    After installation open the truffle console in the projects root directory
-    
-        truffle console
-    Now build the smart contracts (Make sure ganache is running as per specified configuration)
-
-        compile
 
 14. Go to the root directory of repo and install node modules
 
-       npm install
+        npm install
 
 15. Install python dependencies
 
-       pip install fastapi mysql-connector-python pydantic python-dotenv uvicorn uvicorn[standard]
+        pip install fastapi mysql-connector-python pydantic python-dotenv uvicorn uvicorn[standard]
 
 ## Usage
 
@@ -87,7 +81,7 @@
 
 2. Bundle app.js with browserify
     
-        browserify ./src/js/app.js -o ./src/dist/app/bundle.js
+        browserify ./src/js/app.js -o ./src/dist/app.bundle.js
 
 2. Start the node server server
     
