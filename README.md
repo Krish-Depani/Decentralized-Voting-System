@@ -79,7 +79,16 @@
 
 1. Open terminal at the project directory
 
-2. Bundle app.js with browserify
+2. Open Ganache and it's <b>development</b> workspace.
+
+3. open terminal in project's root directory and run the command
+
+        truffle console
+   then compile the smart contracts with command
+
+        compile
+
+5. Bundle app.js with browserify
     
         browserify ./src/js/app.js -o ./src/dist/app.bundle.js
 
