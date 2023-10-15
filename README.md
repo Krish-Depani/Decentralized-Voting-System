@@ -71,7 +71,7 @@
 
 15. Install python dependencies
 
-        pip install fastapi mysql-connector-python pydantic python-dotenv uvicorn uvicorn[standard]
+        pip install fastapi mysql-connector-python pydantic python-dotenv uvicorn uvicorn[standard] PyJWT
 
 ## Usage
 
