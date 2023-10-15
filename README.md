@@ -149,7 +149,7 @@ For more info about usage checkout [YouTube video](https://www.youtube.com/watch
         ├── package.json                  # Node.js package configuration.
         ├── package-lock.json             # Lockfile for package dependencies.
         ├── README.md                     # Project documentation.
-        └── truffle.js                    # Truffle configuration file.
+        └── truffle-config.js                    # Truffle configuration file.
 
 ## License
 
