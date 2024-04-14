@@ -87,6 +87,7 @@
    then compile the smart contracts with command
 
         compile
+   exit the truffle console
 
 5. Bundle app.js with browserify
     
