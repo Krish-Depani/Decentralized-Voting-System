@@ -1,94 +1,112 @@
+/* Full screen background with center alignment */
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 90vh;
-    background: url('../assets/eth5.jpg') no-repeat center center fixed;
-    background-size: cover;
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  background: url('https://img.freepik.com/free-vector/low-poly-style-abstract-backdrop-modern-presentation_1017-53594.jpg') no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Wrapper for login box */
+.login-wrapper {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+/* Card-style box */
+.login-box {
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 30px 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Headings */
+h1 {
+  color: #fff;
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+h2 {
+  color: #fff;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* Form layout */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Form groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label styling */
+label {
+  color: #fff;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+/* Input styling */
+input {
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #000;
+}
+
+/* Button styling */
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: #198a7b;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #44afa1;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:active {
+  transform: translateY(2px);
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .login-box {
+    padding: 20px 15px;
   }
-  
-  .container {
-    width: 450px;
-    max-width: 500px;
-    background-color: rgba(0, 0, 0, 0.650);
-    padding: 40px;
-    border-radius: 5px;
-    box-shadow: 0px 3px 10px rgba(255, 255, 255, 0.1);
-    text-align: center;
-  }
-  
+
   h1 {
-    font-size: 32px;
-    color: #ffffff;
-    margin-bottom: 30px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-    width: 100%;
-  }
-  
-  label {
-    display: block;
-    font-size: 14px;
-    color: #ffffff;
-    text-align: left;
-    margin-bottom: 5px;
-  }
-  
-  input {
-    width: 95%;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
     font-size: 18px;
-    color: #000000;
-    background-color: rgb(255, 255, 255); 
   }
-  
-  button {
-    width: 100%;
-    padding: 12px;
-    background-color: #198a7b;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    font-size: 19px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+
+  h2 {
+    font-size: 16px;
   }
-  
-  button:hover {
-    background-color: #44afa1;
-  }
-  
-  button:focus {
-    outline: none;
-  }
-  
-  button:active {
-    transform: translateY(2px);
-  }
-  
-  @media (max-width: 768px) {
-    .container {
-      width: 90%;
-    }
-  }
-  button {
-    width: 50%; 
-    padding: 10px; 
-    background-color: #198a7b;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    font-size: 19px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: 0 auto; 
-  }
-  
+}

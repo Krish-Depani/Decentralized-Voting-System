@@ -1,23 +1,26 @@
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Voting Page</title>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Voting Page</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="../css/index.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="text-center">
+      <h1>Decentralized Voting Using Ethereum Blockchain</h1>
+      <h2>Welcome for Voting</h2>
+      <p><strong>Voting Dates:</strong> <span id="dates"></span></p>
+    </header>
 
-    <link rel="stylesheet" type="text/css" href="../css/index.css">
-    
-  </head>
-  <body>
-    <div id="head" class="text-center">
-      <h1 align="center">Decentralized Voting Using Ethereum Blockchain</h1>
-      <h2 align="center">Welcome for Voting</h2> 
-      <h3 align="center"><p>Voting Dates: <span id="dates"></span></p></h3>
-      <br/> 
+    <div style="text-align: right; margin: 10px 20px;">
+      <button id="logoutBtn" style="padding: 8px 16px;">Logout</button>
     </div>
-    <div id="candidate" class="container"> 
+
+    <section id="candidate">
       <table class="table text-center">
         <thead>
           <tr>
@@ -28,21 +31,44 @@
         </thead>
         <tbody id="boxCandidate"></tbody>
       </table>
-      <br/>
-      <div id="vote">
+
+      <div id="vote" class="vote-section">
         <p>Please select one of the candidates and click the vote button.</p>
-        <button id="voteButton" class="btn btn-primary" onclick="App.vote()" disabled>Vote</button>
+        <button id="voteButton" onclick="App.vote()" disabled>Vote</button>
         <div id="msg"></div>
-  
         <div id="vote-box"></div>
       </div>
-    </div>
-  
-    <div id="account">
-          <p id="accountAddress" class="text-center"></p>
-    </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    </section>
+
+    <footer id="account">
+      <p id="accountAddress" class="text-center"></p>
+    </footer>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
   <script src="../dist/app.bundle.js" type="module"></script>
-  </body>
+
+  <!-- Logout handler -->
+  <script>
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      Swal.fire({
+        title: 'Are you sure you want to logout?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, logout',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Optional: clear session/localStorage here
+          localStorage.clear();
+          sessionStorage.clear();
+          // Redirect to login page
+          window.location.href = '/';
+        }
+      });
+    });
+  </script>
+</body>
 </html>
