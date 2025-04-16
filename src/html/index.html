@@ -45,12 +45,12 @@
     </footer>
   </main>
 
-  <!-- Scripts -->
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
   <script src="../dist/app.bundle.js" type="module"></script>
 
-  <!-- Logout handler -->
+
   <script>
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
       Swal.fire({
@@ -61,10 +61,10 @@
         cancelButtonText: 'Cancel'
       }).then((result) => {
         if (result.isConfirmed) {
-          // Optional: clear session/localStorage here
+         
           localStorage.clear();
           sessionStorage.clear();
-          // Redirect to login page
+        
           window.location.href = '/';
         }
       });
