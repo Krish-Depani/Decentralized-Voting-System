@@ -1,94 +1,135 @@
-body {
-    font-family: 'Arial', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+* {
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 90vh;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+}
+
+body {
+    /* background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);  */
     background: url('../assets/eth5.jpg') no-repeat center center fixed;
     background-size: cover;
-  }
-  
-  .container {
-    width: 450px;
-    max-width: 500px;
-    background-color: rgba(0, 0, 0, 0.650);
-    padding: 40px;
-    border-radius: 5px;
-    box-shadow: 0px 3px 10px rgba(255, 255, 255, 0.1);
-    text-align: center;
-  }
-  
-  h1 {
-    font-size: 32px;
-    color: #ffffff;
-    margin-bottom: 30px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-  }
-  
-  label {
+    height: 100%;
+}
+
+.login-box {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    width: 350px;
+}
+
+.logo img {
+    width: 80px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+h2 {
+    color: #40E9E0;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+label {
+    color: #40E9E0;
+    font-size: 14px;
+    margin-bottom: 5px;
     display: block;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #40E9E0;
+    background: rgba(0, 255, 255, 0.2);
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #40E9E0, #0077ff);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0, 255, 255, 0.3);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0077ff, #00fff7);
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.5);
+}
+
+button:active {
+    transform: translateY(2px);
+}
+
+.register-link {
+    margin-top: 15px;
     font-size: 14px;
     color: #ffffff;
-    text-align: left;
-    margin-bottom: 5px;
-  }
-  
-  input {
-    width: 95%;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    font-size: 18px;
-    color: #000000;
-    background-color: rgb(255, 255, 255); 
-  }
-  
-  button {
-    width: 100%;
-    padding: 12px;
-    background-color: #198a7b;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    font-size: 19px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #44afa1;
-  }
-  
-  button:focus {
-    outline: none;
-  }
-  
-  button:active {
-    transform: translateY(2px);
-  }
-  
-  @media (max-width: 768px) {
-    .container {
-      width: 90%;
+}
+
+.register-link a {
+    color: #40E9E0;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .login-box {
+        width: 90%;
+        padding: 30px;
     }
-  }
-  button {
-    width: 50%; 
-    padding: 10px; 
-    background-color: #198a7b;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    font-size: 19px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: 0 auto; 
-  }
-  
+    
+    h2 {
+        font-size: 20px;
+    }
+
+    input {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 16px;
+    }
+}

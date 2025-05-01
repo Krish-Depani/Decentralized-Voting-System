@@ -1,46 +1,147 @@
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin portal</title>
-
     <link rel="stylesheet" type="text/css" href="../css/admin.css">
-    
-  </head>
-  <body>
+
+    <!-- Add Web3.js for blockchain interaction -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+</head>
+
+<body>
     <div id="head" class="text-center">
-      <h1 align="center" style="color: azure;">Decentralized Voting Using Ethereum Blockchain</h1>
-      <br/> 
+        <h1 align="center" style="color: azure;">Decentralized Voting Using Ethereum Blockchain</h1>
+        <br />
     </div>
 
     <div class="container">
-     <legend>Add Candidate</legend>  
-     <table  class="table text-center"> 
-              <tr>
-                <th>Name </th><td>  <input id="name" type="text" name="name" placeholder ="Candidates name" autocomplete="off"></td>  
-                <th>Party</th><td><input id="party" type="text" name="party" placeholder ="Candidates party"></td> 
-              </tr>
-      </table> 
-      <input id="addCandidate" type="submit" name="submit" value="Add Candidate">
-      <p id="Aday"></p>
+        <legend>Add Candidate</legend>
+        <table class="table text-center">
+            <tr>
+                <th>Name</th>
+                <td><input id="name" type="text" name="name" placeholder="Candidate's name" autocomplete="off"></td>
+                <th>Party</th>
+                <td><input id="party" type="text" name="party" placeholder="Candidate's party"></td>
+            </tr>
+        </table>
+        <input id="addCandidate" type="submit" name="submit" value="Add Candidate">
+        <p id="Aday"></p>
     </div>
 
     <div class="container">
-     <legend>Define Voting Dates</legend>  
-     <table  class="table text-center"> 
-              <tr>              
-                <th>Start date</th><td><input id="startDate" type="date" name=""></td>
-                <th>End date</th><td>    <input id="endDate" type="date" name="" ></td>
-              </tr>
-      </table> 
-      <input id="addDate" type="submit" name="submit" value="Define Dates">
-      <p id="Aday"></p>
+        <legend>Define Voting Dates</legend>
+        <table class="table text-center">
+            <tr>
+                <th>Start date</th>
+                <td><input id="startDate" type="date" name=""></td>
+                <th>End date</th>
+                <td><input id="endDate" type="date" name=""></td>
+            </tr>
+        </table>
+        <input id="addDate" type="submit" name="submit" value="Define Dates">
+        <p id="Aday"></p>
     </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-  <script src="../dist/app.bundle.js" type="module"></script>
-  </body>
+
+    <script>
+        // Web3.js setup and contract interaction
+        let web3;
+        let contract;
+        const contractAddress = "0xYourContractAddress"; // Replace with your contract's address
+        const contractABI = [
+            {
+                "inputs": [
+                    { "internalType": "string", "name": "_name", "type": "string" },
+                    { "internalType": "string", "name": "_party", "type": "string" }
+                ],
+                "name": "addCandidate",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getCandidates",
+                "outputs": [
+                    {
+                        "components": [
+                            { "internalType": "string", "name": "name", "type": "string" },
+                            { "internalType": "string", "name": "party", "type": "string" }
+                        ],
+                        "internalType": "struct Voting.Candidate[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        // Check if MetaMask is installed
+        if (typeof window.ethereum !== 'undefined') {
+            web3 = new Web3(window.ethereum);
+            window.ethereum.request({ method: 'eth_requestAccounts' })
+                .then(() => {
+                    contract = new web3.eth.Contract(contractABI, contractAddress);
+                    console.log('Connected to MetaMask');
+                })
+                .catch(error => {
+                    console.error('User denied MetaMask access');
+                    alert("You denied access to MetaMask. Please enable MetaMask to interact with the blockchain.");
+                });
+        } else {
+            alert("MetaMask is not installed. Please install MetaMask to proceed.");
+            window.location.href = "https://metamask.io/download.html";  // Link to MetaMask download page
+        }
+
+        // Function to add candidate
+        document.getElementById('addCandidate').addEventListener('click', async () => {
+            const name = document.getElementById('name').value;
+            const party = document.getElementById('party').value;
+
+            if (!name || !party) {
+                alert("Please fill in both candidate name and party.");
+                return;
+            }
+
+            // Get the user's MetaMask account address
+            const accounts = await web3.eth.getAccounts();
+            const account = accounts[0];
+
+            try {
+                // Call the addCandidate function in the smart contract
+                await contract.methods.addCandidate(name, party).send({ from: account });
+                alert("Candidate added successfully!");
+            } catch (error) {
+                console.error("Error adding candidate:", error);
+                alert("Failed to add candidate. Please check the console for errors.");
+            }
+        });
+
+        // Function to define voting dates
+        document.getElementById('addDate').addEventListener('click', async () => {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert("Please define both start and end dates.");
+                return;
+            }
+
+            // Define your smart contract logic for adding voting dates here if needed
+            // (e.g., a function that sets the voting period on the blockchain)
+            console.log(`Start Date: ${startDate}, End Date: ${endDate}`);
+            alert("Voting dates defined!");
+        });
+    </script>
+</body>
+
 </html>

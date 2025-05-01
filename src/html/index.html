@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,15 +7,15 @@
     <title>Voting Page</title>
 
     <link rel="stylesheet" type="text/css" href="../css/index.css">
-    
   </head>
   <body>
     <div id="head" class="text-center">
       <h1 align="center">Decentralized Voting Using Ethereum Blockchain</h1>
       <h2 align="center">Welcome for Voting</h2> 
-      <h3 align="center"><p>Voting Dates: <span id="dates"></span></p></h3>
+      <h3 align="center"><p>Voting Dates: <span id="dates">Thu Jul 13 2023 - Fri Jul 14 2023</span></p></h3>
       <br/> 
     </div>
+
     <div id="candidate" class="container"> 
       <table class="table text-center">
         <thead>
@@ -26,23 +25,34 @@
             <th>Total Vote</th>
           </tr>
         </thead>
-        <tbody id="boxCandidate"></tbody>
+        <tbody id="boxCandidate">
+          <!-- Static data for candidates -->
+          <tr>
+            <td><input type="radio" name="candidate" id="candidate1" value="1">James</td>
+            <td>Party</td>
+            <td>0</td>
+          </tr>
+          <!-- <tr>
+            <td><input type="radio" name="candidate" id="candidate2" value="2"> johnwick</td>
+            <td>bjp</td>
+            <td>1</td>
+          </tr> -->
+        </tbody>
       </table>
       <br/>
       <div id="vote">
         <p>Please select one of the candidates and click the vote button.</p>
         <button id="voteButton" class="btn btn-primary" onclick="App.vote()" disabled>Vote</button>
         <div id="msg"></div>
-  
-        <div id="vote-box"></div>
       </div>
     </div>
-  
+
     <div id="account">
-          <p id="accountAddress" class="text-center"></p>
+          <p id="accountAddress" class="text-center">Your Account: null</p>
     </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-  <script src="../dist/app.bundle.js" type="module"></script>
+    <script src="../dist/app.bundle.js" type="module"></script>
   </body>
 </html>
