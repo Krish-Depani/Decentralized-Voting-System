@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal MetaMask Test</title>
+</head>
+<body>
+    <button onclick="connect()">Connect</button>
+    <div id="result"></div>
+    
+    <script>
+        async function connect() {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+                    document.getElementById('result').innerText = 'Connected: ' + accounts[0];
+                } catch (error) {
+                    document.getElementById('result').innerText = 'Error: ' + error.message;
+                }
+            } else {
+                document.getElementById('result').innerText = 'MetaMask not installed';
+            }
+        }
+    </script>
+</body>
+</html>

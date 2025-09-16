@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MUT Voting System - Admin Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1, h2, h3 {
+            color: #006400;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            margin-top: 0;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .metamask-status {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-connected {
+            background-color: #28a745;
+        }
+
+        .status-disconnected {
+            background-color: #dc3545;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .date-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-group input {
+            width: 70px;
+            text-align: center;
+        }
+
+        .date-separator {
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .candidate {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .elections-list {
+            margin-top: 20px;
+        }
+
+        .election-card {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .election-card h3 {
+            margin-top: 0;
+        }
+
+        .election-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-upcoming {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-ended {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Debug panel - can be hidden in production */
+        .debug-panel {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .debug-panel pre {
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Murang'a University of Technology</h1>
+            <h2>Decentralized Voting System - Admin Portal</h2>
+        </div>
+
+        <div class="metamask-status">
+            <div>
+                <span class="status-indicator status-disconnected" id="statusIndicator"></span>
+                <span id="connectionStatus">Not connected to MetaMask</span>
+            </div>
+            <button id="connectBtn">Connect to MetaMask</button>
+        </div>
+
+        <div id="accountInfo" class="hidden">
+            <p><strong>Account:</strong> <span id="accountAddress"></span></p>
+            <p><strong>Network:</strong> <span id="networkName"></span></p>
+        </div>
+
+        <div id="adminContent" class="hidden">
+            <h2>Create New Election</h2>
+
+            <form id="electionForm">
+                <div class="form-group">
+                    <label for="electionName">Election Name:</label>
+                    <input type="text" id="electionName" placeholder="e.g., Student Council Elections 2025" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Start Date (DD/MM/YYYY):</label>
+                    <div class="date-group">
+                        <input type="number" id="startDay" min="1" max="31" placeholder="DD" value="1" required>
+                        <span class="date-separator">/</span>
+                        <input type="number" id="startMonth" min="1" max="12" placeholder="MM" value="5" required>
+                        <span class="date-separator">/</span>
+                        <input type="number" id="startYear" min="2025" max="2030" placeholder="YYYY" value="2025" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>End Date (DD/MM/YYYY):</label>
+                    <div class="date-group">
+                        <input type="number" id="endDay" min="1" max="31" placeholder="DD" value="10" required>
+                        <span class="date-separator">/</span>
+                        <input type="number" id="endMonth" min="1" max="12" placeholder="MM" value="5" required>
+                        <span class="date-separator">/</span>
+                        <input type="number" id="endYear" min="2025" max="2030" placeholder="YYYY" value="2025" required>
+                    </div>
+                </div>
+
+                <h3>Candidates</h3>
+                <div id="candidatesContainer">
+                    <div class="candidate">
+                        <div class="form-group">
+                            <label for="candidate1">Candidate 1:</label>
+                            <input type="text" id="candidate1" placeholder="Candidate Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="party1">Party/Position:</label>
+                            <input type="text" id="party1" placeholder="Party or Position" required>
+                        </div>
+                    </div>
+                    <div class="candidate">
+                        <div class="form-group">
+                            <label for="candidate2">Candidate 2:</label>
+                            <input type="text" id="candidate2" placeholder="Candidate Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="party2">Party/Position:</label>
+                            <input type="text" id="party2" placeholder="Party or Position" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="addCandidateBtn" class="btn-secondary">Add Another Candidate</button>
+                <button type="submit" id="createElectionBtn">Create Election</button>
+            </form>
+
+            <div id="formStatus" class="status-message hidden"></div>
+
+            <h2>Active Elections</h2>
+            <div id="electionsList" class="elections-list">
+                <p>Loading elections...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2025 Murang'a University of Technology - Decentralized Voting System
+    </div>
+
+    <!-- Debug panel - can be hidden in production -->
+    <div class="container debug-panel">
+        <h3>Debug Information</h3>
+        <pre id="debugOutput">Debug information will appear here...</pre>
+    </div>
+
+    <script>
+        // Global variables
+        let isConnected = false;
+        let accounts = [];
+        let candidateCount = 2;
+
+        // Sample elections data
+        const elections = [
+            {
+                id: 1,
+                name: "Student Council Elections 2025",
+                startDate: "01/05/2025",
+                endDate: "10/05/2025",
+                status: "active",
+                candidates: 4
+            },
+            {
+                id: 2,
+                name: "Department Representatives",
+                startDate: "15/04/2025",
+                endDate: "20/04/2025",
+                status: "upcoming",
+                candidates: 6
+            },
+            {
+                id: 3,
+                name: "Sports Committee Election",
+                startDate: "01/03/2025",
+                endDate: "05/03/2025",
+                status: "ended",
+                candidates: 3
+            }
+        ];
+
+        // DOM elements
+        const statusIndicator = document.getElementById('statusIndicator');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const connectBtn = document.getElementById('connectBtn');
+        const accountInfo = document.getElementById('accountInfo');
+        const accountAddress = document.getElementById('accountAddress');
+        const networkName = document.getElementById('networkName');
+        const adminContent = document.getElementById('adminContent');
+        const electionForm = document.getElementById('electionForm');
+        const addCandidateBtn = document.getElementById('addCandidateBtn');
+        const candidatesContainer = document.getElementById('candidatesContainer');
+        const formStatus = document.getElementById('formStatus');
+        const electionsList = document.getElementById('electionsList');
+        const debugOutput = document.getElementById('debugOutput');
+
+        // Debug log function
+        function log(message) {
+            console.log(message);
+            debugOutput.textContent += "\n" + message;
+        }
+
+        // Initialize
+        function init() {
+            log("Initializing application...");
+
+            // Check if MetaMask is installed
+            if (typeof window.ethereum !== 'undefined') {
+                log("MetaMask is installed");
+
+                // Add event listeners
+                connectBtn.addEventListener('click', connectToMetaMask);
+                addCandidateBtn.addEventListener('click', addCandidate);
+                electionForm.addEventListener('submit', createElection);
+
+                // Check if already connected
+                checkConnection();
+
+                // Listen for account changes
+                window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+                // Listen for chain changes
+                window.ethereum.on('chainChanged', () => window.location.reload());
+            } else {
+                log("MetaMask is not installed");
+                connectionStatus.textContent = "MetaMask is not installed. Please install MetaMask extension.";
+                connectBtn.disabled = true;
+            }
+        }
+
+        // Check if already connected to MetaMask
+        async function checkConnection() {
+            try {
+                log("Checking existing connection...");
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+
+                if (accounts.length > 0) {
+                    log("Already connected to account: " + accounts[0]);
+                    handleAccountsChanged(accounts);
+                } else {
+                    log("Not connected to any accounts");
+                }
+            } catch (error) {
+                log("Error checking connection: " + error.message);
+            }
+        }
+
+        // Connect to MetaMask
+        async function connectToMetaMask() {
+            try {
+                log("Requesting connection to MetaMask...");
+                connectionStatus.textContent = "Connecting to MetaMask...";
+
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                handleAccountsChanged(accounts);
+            } catch (error) {
+                log("Error connecting to MetaMask: " + error.message);
+                connectionStatus.textContent = "Error connecting to MetaMask: " + error.message;
+            }
+        }
+
+        // Handle accounts changed
+        function handleAccountsChanged(newAccounts) {
+            if (newAccounts.length === 0) {
+                log("Disconnected from MetaMask");
+                isConnected = false;
+                statusIndicator.className = "status-indicator status-disconnected";
+                connectionStatus.textContent = "Not connected to MetaMask";
+                accountInfo.classList.add('hidden');
+                adminContent.classList.add('hidden');
+            } else {
+                log("Connected to account: " + newAccounts[0]);
+                accounts = newAccounts;
+                isConnected = true;
+
+                // Update UI
+                statusIndicator.className = "status-indicator status-connected";
+                connectionStatus.textContent = "Connected to MetaMask";
+                accountAddress.textContent = accounts[0];
+                accountInfo.classList.remove('hidden');
+                adminContent.classList.remove('hidden');
+
+                // Get network information
+                getNetworkInfo();
+
+                // Load elections
+                loadElections();
+            }
+        }
+
+        // Get network information
+        async function getNetworkInfo() {
+            try {
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                log("Chain ID: " + chainId);
+
+                // Determine network name
+                let network = "Unknown Network";
+
+                switch (chainId) {
+                    case "0x1":
+                        network = "Ethereum Mainnet";
+                        break;
+                    case "0x3":
+                        network = "Ropsten Testnet";
+                        break;
+                    case "0x4":
+                        network = "Rinkeby Testnet";
+                        break;
+                    case "0x5":
+                        network = "Goerli Testnet";
+                        break;
+                    case "0x539":
+                        network = "Ganache Local";
+                        break;
+                    default:
+                        network = "Local Network (" + chainId + ")";
+                }
+
+                networkName.textContent = network;
+                log("Connected to network: " + network);
+            } catch (error) {
+                log("Error getting network info: " + error.message);
+            }
+        }
+
+        // Add candidate
+        function addCandidate() {
+            candidateCount++;
+            log("Adding candidate #" + candidateCount);
+
+            const candidateDiv = document.createElement('div');
+            candidateDiv.className = 'candidate';
+            candidateDiv.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeCandidate(this)">&times;</button>
+                <div class="form-group">
+                    <label for="candidate${candidateCount}">Candidate ${candidateCount}:</label>
+                    <input type="text" id="candidate${candidateCount}" placeholder="Candidate Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="party${candidateCount}">Party/Position:</label>
+                    <input type="text" id="party${candidateCount}" placeholder="Party or Position" required>
+                </div>
+            `;
+
+            candidatesContainer.appendChild(candidateDiv);
+        }
+
+        // Remove candidate
+        function removeCandidate(button) {
+            const candidateDiv = button.parentNode;
+            candidatesContainer.removeChild(candidateDiv);
+        }
+
+        // Create election
+        async function createElection(event) {
+            event.preventDefault();
+
+            if (!isConnected) {
+                showFormStatus('error', 'Please connect to MetaMask first.');
+                return;
+            }
+
+            // Get form values
+            const electionName = document.getElementById('electionName').value;
+            const startDay = document.getElementById('startDay').value;
+            const startMonth = document.getElementById('startMonth').value;
+            const startYear = document.getElementById('startYear').value;
+            const endDay = document.getElementById('endDay').value;
+            const endMonth = document.getElementById('endMonth').value;
+            const endYear = document.getElementById('endYear').value;
+
+            // Format dates
+            const startDate = `${startDay}/${startMonth}/${startYear}`;
+            const endDate = `${endDay}/${endMonth}/${endYear}`;
+
+            // Get candidates
+            const candidates = [];
+            const candidateDivs = document.querySelectorAll('#candidatesContainer .candidate');
+
+            candidateDivs.forEach((div, index) => {
+                const nameInput = div.querySelector(`#candidate${index + 1}`) || div.querySelector('input[id^="candidate"]');
+                const partyInput = div.querySelector(`#party${index + 1}`) || div.querySelector('input[id^="party"]');
+
+                if (nameInput && partyInput && nameInput.value.trim() && partyInput.value.trim()) {
+                    candidates.push({
+                        name: nameInput.value.trim(),
+                        party: partyInput.value.trim(),
+                        votes: 0 // Initialize with zero votes
+                    });
+                }
+            });
+
+            // Validate form
+            if (!electionName) {
+                showFormStatus('error', 'Please enter an election name.');
+                return;
+            }
+
+            if (candidates.length < 2) {
+                showFormStatus('error', 'Please add at least two candidates.');
+                return;
+            }
+
+            log("Creating election: " + electionName);
+            log("Start date: " + startDate);
+            log("End date: " + endDate);
+            log("Candidates: " + candidates.join(", "));
+
+            try {
+                // In a real application, this would interact with the blockchain
+                // For now, we'll just simulate success
+
+                // Show success message
+                showFormStatus('success', `
+                    <h3>Election Created Successfully!</h3>
+                    <p><strong>Name:</strong> ${electionName}</p>
+                    <p><strong>Period:</strong> ${startDate} to ${endDate}</p>
+                    <p><strong>Candidates:</strong></p>
+                    <ul>
+                        ${candidates.map(candidate => `<li>${candidate.name} (${candidate.party})</li>`).join('')}
+                    </ul>
+                `);
+
+                // Reset form
+                electionForm.reset();
+
+                // Reset candidates (keep only the first two)
+                const candidateDivs = document.querySelectorAll('#candidatesContainer .candidate');
+                for (let i = 2; i < candidateDivs.length; i++) {
+                    candidatesContainer.removeChild(candidateDivs[i]);
+                }
+
+                // Reset candidate count
+                candidateCount = 2;
+
+                // Reset default dates
+                document.getElementById('startDay').value = '1';
+                document.getElementById('startMonth').value = '5';
+                document.getElementById('startYear').value = '2025';
+                document.getElementById('endDay').value = '10';
+                document.getElementById('endMonth').value = '5';
+                document.getElementById('endYear').value = '2025';
+
+                // Reload elections
+                loadElections();
+            } catch (error) {
+                log("Error creating election: " + error.message);
+                showFormStatus('error', 'Error creating election: ' + error.message);
+            }
+        }
+
+        // Show form status
+        function showFormStatus(type, message) {
+            formStatus.className = 'status-message ' + type;
+            formStatus.innerHTML = message;
+            formStatus.classList.remove('hidden');
+
+            // Scroll to status message
+            formStatus.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Load elections
+        function loadElections() {
+            log("Loading elections...");
+
+            // In a real application, this would fetch data from the blockchain
+            // For now, we'll just use sample data
+
+            const elections = [
+                {
+                    id: 1,
+                    name: "Student Council Elections 2025",
+                    startDate: "01/05/2025",
+                    endDate: "10/05/2025",
+                    status: "upcoming",
+                    candidates: 4
+                },
+                {
+                    id: 2,
+                    name: "Department Representatives",
+                    startDate: "15/04/2025",
+                    endDate: "20/04/2025",
+                    status: "active",
+                    candidates: 6
+                },
+                {
+                    id: 3,
+                    name: "Sports Committee Election",
+                    startDate: "01/03/2025",
+                    endDate: "05/03/2025",
+                    status: "ended",
+                    candidates: 3
+                }
+            ];
+
+            if (elections.length === 0) {
+                electionsList.innerHTML = '<p>No elections found.</p>';
+                return;
+            }
+
+            let html = '';
+
+            elections.forEach(election => {
+                let statusClass = '';
+                let statusText = '';
+
+                switch (election.status) {
+                    case 'active':
+                        statusClass = 'status-active';
+                        statusText = 'Active';
+                        break;
+                    case 'upcoming':
+                        statusClass = 'status-upcoming';
+                        statusText = 'Upcoming';
+                        break;
+                    case 'ended':
+                        statusClass = 'status-ended';
+                        statusText = 'Ended';
+                        break;
+                }
+
+                html += `
+                    <div class="election-card">
+                        <h3>${election.name}</h3>
+                        <p><strong>Period:</strong> ${election.startDate} to ${election.endDate}</p>
+                        <p><strong>Status:</strong> <span class="election-status ${statusClass}">${statusText}</span></p>
+                        <p><strong>Candidates:</strong> ${election.candidates}</p>
+                        <button onclick="viewElection(${election.id})">View Details</button>
+                    </div>
+                `;
+            });
+
+            electionsList.innerHTML = html;
+        }
+
+        // View election details
+        function viewElection(id) {
+            log("Viewing election details for ID: " + id);
+
+            // Find the election
+            const election = elections.find(e => e.id === id);
+            if (!election) {
+                showFormStatus('error', 'Election not found.');
+                return;
+            }
+
+            // Create a detailed view
+            let html = `
+                <div class="election-details">
+                    <h3>${election.name}</h3>
+                    <p><strong>Period:</strong> ${election.startDate} to ${election.endDate}</p>
+                    <p><strong>Status:</strong> <span class="election-status ${getStatusClass(election.status)}">${getStatusText(election.status)}</span></p>
+
+                    <h4>Candidates</h4>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Name</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Party/Position</th>
+                                <th style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">Votes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            // In a real application, we would fetch this data from the blockchain
+            // For now, we'll use sample data based on the election ID
+            let candidates = [];
+
+            // Different sample data for each election
+            if (id === 1) {
+                candidates = [
+                    { name: "John Doe", party: "Student Unity Party", votes: 45 },
+                    { name: "Jane Smith", party: "Progressive Students Alliance", votes: 30 },
+                    { name: "Michael Johnson", party: "Independent", votes: 25 }
+                ];
+            } else if (id === 2) {
+                candidates = [
+                    { name: "Alice Williams", party: "Computer Science", votes: 120 },
+                    { name: "Bob Brown", party: "Engineering", votes: 85 },
+                    { name: "Carol Davis", party: "Business", votes: 95 },
+                    { name: "David Wilson", party: "Arts", votes: 65 }
+                ];
+            } else if (id === 3) {
+                candidates = [
+                    { name: "Emma Martinez", party: "Athletics Department", votes: 75 },
+                    { name: "Frank Robinson", party: "Football Club", votes: 120 },
+                    { name: "Grace Lee", party: "Basketball Team", votes: 95 }
+                ];
+            } else {
+                // Default sample data
+                candidates = [
+                    { name: "Candidate 1", party: "Party A", votes: 50 },
+                    { name: "Candidate 2", party: "Party B", votes: 40 }
+                ];
+            }
+
+            // Calculate total votes
+            const totalVotes = candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
+
+            // Add candidates to the table
+            candidates.forEach(candidate => {
+                const percentage = totalVotes > 0 ? (candidate.votes / totalVotes * 100).toFixed(1) : 0;
+
+                html += `
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">${candidate.name}</td>
+                        <td style="padding: 10px;">${candidate.party}</td>
+                        <td style="padding: 10px; text-align: right;">${candidate.votes} (${percentage}%)</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                        <tfoot>
+                            <tr style="background-color: #f2f2f2;">
+                                <td colspan="2" style="padding: 10px; font-weight: bold;">Total Votes</td>
+                                <td style="padding: 10px; text-align: right; font-weight: bold;">${totalVotes}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <h4>Results Visualization</h4>
+                    <div class="results-visualization">
+            `;
+
+            // Add visualization bars
+            candidates.forEach(candidate => {
+                const percentage = totalVotes > 0 ? (candidate.votes / totalVotes * 100).toFixed(1) : 0;
+
+                html += `
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span style="font-weight: bold;">${candidate.name}</span>
+                            <span>${percentage}%</span>
+                        </div>
+                        <div style="height: 20px; background-color: #e9ecef; border-radius: 10px; overflow: hidden;">
+                            <div style="height: 100%; width: ${percentage}%; background-color: #4CAF50; border-radius: 10px;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+
+                    <button class="btn-secondary" onclick="loadElections()">Back to Elections</button>
+                </div>
+            `;
+
+            // Update the elections list with the detailed view
+            electionsList.innerHTML = html;
+        }
+
+        // Helper functions for status
+        function getStatusClass(status) {
+            switch (status) {
+                case 'active': return 'status-active';
+                case 'upcoming': return 'status-upcoming';
+                case 'ended': return 'status-ended';
+                default: return '';
+            }
+        }
+
+        function getStatusText(status) {
+            switch (status) {
+                case 'active': return 'Active';
+                case 'upcoming': return 'Upcoming';
+                case 'ended': return 'Ended';
+                default: return 'Unknown';
+            }
+        }
+
+        // Initialize the application
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

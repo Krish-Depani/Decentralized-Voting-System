@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<!--
+    MUT Voting System - Voter Interface
+    Simplified storage-based implementation
+    Developed by Zophlic (2025)
+-->
+<html>
+<head>
+    <title>MUT Voting System - Voter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #006400;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .election-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .election-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-ended {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .candidate-option {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .candidate-option input {
+            margin-right: 15px;
+        }
+        .candidate-info {
+            flex-grow: 1;
+        }
+        .candidate-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .candidate-party {
+            color: #666;
+            font-size: 14px;
+        }
+        .status {
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MUT Voting System - Voter</h1>
+
+        <div id="metamask-status">
+            <button id="connect-btn">Connect to MetaMask</button>
+            <p id="account-info"></p>
+        </div>
+
+        <div id="voter-panel" style="display:none;">
+            <h2>Available Elections</h2>
+            <div id="elections-list"></div>
+
+            <div id="voting-interface" style="display:none;">
+                <h2 id="election-title"></h2>
+                <p id="election-period"></p>
+
+                <div id="candidates-container"></div>
+
+                <button id="vote-btn" disabled>Cast Your Vote</button>
+                <button id="back-btn">Back to Elections</button>
+
+                <div id="vote-status" class="status" style="display:none;"></div>
+            </div>
+
+            <div id="results-view" style="display:none;">
+                <h2 id="results-title"></h2>
+                <p id="results-period"></p>
+                <p id="total-votes"></p>
+
+                <div id="results-container"></div>
+
+                <button id="back-from-results-btn">Back to Elections</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * MUT Voting System - Voter Interface JavaScript
+         *
+         * This script provides the voter functionality for the simplified voting system.
+         * It allows users to view elections, cast votes, and see results in real-time.
+         *
+         * Features:
+         * - MetaMask integration for authentication
+         * - Vote casting with duplicate prevention
+         * - Real-time result visualization
+         * - Persistent storage using localStorage
+         *
+         * @author Zophlic
+         * @version 1.0.0
+         */
+
+        // Get elections from localStorage for persistence between sessions
+        let elections = JSON.parse(localStorage.getItem('elections') || '[]');
+        let account = null; // Current MetaMask account
+        let selectedCandidate = null; // Currently selected candidate for voting
+        let currentElection = null; // Currently active election
+
+        // DOM Elements
+        const connectBtn = document.getElementById('connect-btn');
+        const accountInfo = document.getElementById('account-info');
+        const voterPanel = document.getElementById('voter-panel');
+        const electionsList = document.getElementById('elections-list');
+        const votingInterface = document.getElementById('voting-interface');
+        const electionTitle = document.getElementById('election-title');
+        const electionPeriod = document.getElementById('election-period');
+        const candidatesContainer = document.getElementById('candidates-container');
+        const voteBtn = document.getElementById('vote-btn');
+        const backBtn = document.getElementById('back-btn');
+        const voteStatus = document.getElementById('vote-status');
+        const resultsView = document.getElementById('results-view');
+        const resultsTitle = document.getElementById('results-title');
+        const resultsPeriod = document.getElementById('results-period');
+        const totalVotes = document.getElementById('total-votes');
+        const resultsContainer = document.getElementById('results-container');
+        const backFromResultsBtn = document.getElementById('back-from-results-btn');
+
+        /**
+         * Connect to MetaMask wallet
+         * Handles the authentication process and updates the UI accordingly
+         * Required before any voting actions can be performed
+         */
+        connectBtn.addEventListener('click', async () => {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    alert('MetaMask is not installed. Please install MetaMask to use this application.');
+                    return;
+                }
+
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (accounts.length > 0) {
+                    account = accounts[0];
+                    accountInfo.textContent = `Connected: ${account.substring(0, 6)}...${account.substring(38)}`;
+                    voterPanel.style.display = 'block';
+                    loadElections();
+                }
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
+                alert('Error connecting to MetaMask: ' + error.message);
+            }
+        });
+
+        /**
+         * Load and display available elections
+         * Retrieves elections from localStorage and renders them in the UI
+         * Shows different actions based on election status and user's voting history
+         *
+         * Implementation by Zophlic
+         */
+        function loadElections() {
+            // Refresh elections from localStorage
+            elections = JSON.parse(localStorage.getItem('elections') || '[]');
+
+            if (elections.length === 0) {
+                electionsList.innerHTML = '<p>No elections found.</p>';
+                return;
+            }
+
+            let html = '';
+
+            elections.forEach(election => {
+                let statusClass = '';
+                let statusText = '';
+                let actionButton = '';
+
+                if (election.status === 'active') {
+                    statusClass = 'status-active';
+                    statusText = 'Active';
+
+                    // Check if user has already voted
+                    const hasVoted = election.voters.includes(account);
+                    if (hasVoted) {
+                        actionButton = `<button disabled>Already Voted</button>`;
+                    } else {
+                        actionButton = `<button onclick="openVoting(${election.id})">Vote Now</button>`;
+                    }
+                } else {
+                    statusClass = 'status-ended';
+                    statusText = 'Ended';
+                    actionButton = `<button onclick="viewResults(${election.id})">View Results</button>`;
+                }
+
+                html += `
+                    <div class="election-card">
+                        <h3>${election.name}</h3>
+                        <p><strong>Period:</strong> ${election.startDate} to ${election.endDate}</p>
+                        <p><strong>Status:</strong> <span class="election-status ${statusClass}">${statusText}</span></p>
+                        <p><strong>Candidates:</strong> ${election.candidates.length}</p>
+                        ${actionButton}
+                    </div>
+                `;
+            });
+
+            electionsList.innerHTML = html;
+        }
+
+        /**
+         * Open the voting interface for a specific election
+         * Displays the election details and candidate options for voting
+         * Prevents users who have already voted from voting again
+         *
+         * @param {number} id - The ID of the election to vote in
+         */
+        function openVoting(id) {
+            currentElection = elections.find(e => e.id === id);
+            if (!currentElection) {
+                alert('Election not found.');
+                return;
+            }
+
+            // Check if user has already voted
+            if (currentElection.voters.includes(account)) {
+                alert('You have already voted in this election.');
+                return;
+            }
+
+            // Update UI
+            electionTitle.textContent = currentElection.name;
+            electionPeriod.textContent = `Voting Period: ${currentElection.startDate} to ${currentElection.endDate}`;
+
+            // Load candidates
+            let html = '';
+
+            currentElection.candidates.forEach((candidate, index) => {
+                html += `
+                    <div class="candidate-option">
+                        <input type="radio" name="candidate" id="candidate-${index}" value="${index}" onchange="selectCandidate(${index})">
+                        <div class="candidate-info">
+                            <div class="candidate-name">${candidate.name}</div>
+                            <div class="candidate-party">${candidate.party}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            candidatesContainer.innerHTML = html;
+
+            // Reset selected candidate
+            selectedCandidate = null;
+            voteBtn.disabled = true;
+
+            // Show voting interface
+            electionsList.style.display = 'none';
+            votingInterface.style.display = 'block';
+            resultsView.style.display = 'none';
+            voteStatus.style.display = 'none';
+        }
+
+        /**
+         * Select a candidate for voting
+         * Updates the selected candidate and enables the vote button
+         *
+         * @param {number} index - The index of the selected candidate
+         */
+        function selectCandidate(index) {
+            selectedCandidate = index;
+            voteBtn.disabled = false;
+        }
+
+        /**
+         * Cast a vote for the selected candidate
+         * Updates the vote count, records the voter, and saves to localStorage
+         * Prevents double voting by tracking voter addresses
+         *
+         * Created by Zophlic
+         */
+        voteBtn.addEventListener('click', () => {
+            if (selectedCandidate === null) {
+                showVoteStatus('error', 'Please select a candidate.');
+                return;
+            }
+
+            // Disable vote button
+            voteBtn.disabled = true;
+            voteBtn.textContent = 'Submitting Vote...';
+
+            // Update vote count
+            currentElection.candidates[selectedCandidate].votes++;
+
+            // Add voter to the list
+            currentElection.voters.push(account);
+
+            // Update election in the array
+            const index = elections.findIndex(e => e.id === currentElection.id);
+            if (index !== -1) {
+                elections[index] = currentElection;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('elections', JSON.stringify(elections));
+
+            // Show success message
+            showVoteStatus('success', 'Your vote has been cast successfully!');
+
+            // Update button
+            voteBtn.textContent = 'Vote Recorded';
+
+            // Disable all radio buttons
+            const radioButtons = document.querySelectorAll('input[name="candidate"]');
+            radioButtons.forEach(radio => {
+                radio.disabled = true;
+            });
+        });
+
+        /**
+         * Show voting status message
+         * Displays success or error messages with appropriate styling
+         *
+         * @param {string} type - The type of message ('success' or 'error')
+         * @param {string} message - The message content
+         */
+        function showVoteStatus(type, message) {
+            voteStatus.className = 'status ' + type;
+            voteStatus.textContent = message;
+            voteStatus.style.display = 'block';
+        }
+
+        /**
+         * View detailed election results
+         * Shows vote counts, percentages, and visual representation of results
+         * Calculates and displays real-time voting statistics
+         *
+         * @param {number} id - The ID of the election to view
+         *
+         * @author Zophlic
+         */
+        function viewResults(id) {
+            const election = elections.find(e => e.id === id);
+            if (!election) {
+                alert('Election not found.');
+                return;
+            }
+
+            // Calculate total votes
+            const totalVotesCount = election.candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
+
+            // Sort candidates by votes (descending)
+            const sortedCandidates = [...election.candidates].sort((a, b) => b.votes - a.votes);
+
+            // Update UI
+            resultsTitle.textContent = election.name + ' - Results';
+            resultsPeriod.textContent = `Voting Period: ${election.startDate} to ${election.endDate}`;
+            totalVotes.textContent = `Total Votes: ${totalVotesCount}`;
+
+            let html = '';
+
+            sortedCandidates.forEach(candidate => {
+                const percentage = totalVotesCount > 0 ? (candidate.votes / totalVotesCount * 100).toFixed(1) : '0.0';
+
+                html += `
+                    <div style="margin-bottom:15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <span>${candidate.name} (${candidate.party})</span>
+                            <span>${percentage}% (${candidate.votes} votes)</span>
+                        </div>
+                        <div style="height:20px; background-color:#f2f2f2; border-radius:10px; overflow:hidden;">
+                            <div style="height:100%; width:${percentage}%; background-color:#4CAF50; border-radius:10px;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsContainer.innerHTML = html;
+
+            // Show results view
+            electionsList.style.display = 'none';
+            votingInterface.style.display = 'none';
+            resultsView.style.display = 'block';
+        }
+
+        /**
+         * Navigate back to elections list from voting interface
+         * Hides the voting interface and shows the elections list
+         * Reloads elections to ensure data is up-to-date
+         *
+         * Implementation by Zophlic
+         */
+        backBtn.addEventListener('click', () => {
+            electionsList.style.display = 'block';
+            votingInterface.style.display = 'none';
+            resultsView.style.display = 'none';
+            loadElections();
+        });
+
+        /**
+         * Navigate back to elections list from results view
+         * Hides the results view and shows the elections list
+         * Reloads elections to ensure data is up-to-date
+         */
+        backFromResultsBtn.addEventListener('click', () => {
+            electionsList.style.display = 'block';
+            votingInterface.style.display = 'none';
+            resultsView.style.display = 'none';
+            loadElections();
+        });
+
+        /**
+         * Initialize the application
+         * Expose necessary functions to the global scope for HTML event handlers
+         * Sets up the application for use
+         *
+         * Developed by Zophlic (2025)
+         */
+        window.openVoting = openVoting; // Make function available globally
+        window.viewResults = viewResults; // Make function available globally
+        window.selectCandidate = selectCandidate; // Make function available globally
+
+        // Check if already connected to MetaMask
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.request({ method: 'eth_accounts' })
+                .then(accounts => {
+                    if (accounts.length > 0) {
+                        account = accounts[0];
+                        accountInfo.textContent = `Connected: ${account.substring(0, 6)}...${account.substring(38)}`;
+                        voterPanel.style.display = 'block';
+                        loadElections();
+                    }
+                })
+                .catch(console.error);
+        }
+    </script>
+</body>
+</html>

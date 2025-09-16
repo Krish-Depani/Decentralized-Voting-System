@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MetaMask Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        
+        #status {
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            color: #3c763d;
+        }
+        
+        .error {
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <h1>MetaMask Connection Test</h1>
+    
+    <p>This is a simple page to test MetaMask connection.</p>
+    
+    <button id="connectBtn">Connect to MetaMask</button>
+    
+    <div id="status"></div>
+    
+    <div id="accountInfo"></div>
+    
+    <script>
+        document.getElementById('connectBtn').addEventListener('click', async function() {
+            const statusDiv = document.getElementById('status');
+            const accountInfoDiv = document.getElementById('accountInfo');
+            
+            try {
+                // Check if MetaMask is installed
+                if (typeof window.ethereum === 'undefined') {
+                    statusDiv.className = 'error';
+                    statusDiv.textContent = 'MetaMask is not installed. Please install MetaMask to continue.';
+                    return;
+                }
+                
+                // Request account access
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
+                if (accounts.length > 0) {
+                    // Success
+                    statusDiv.className = 'success';
+                    statusDiv.textContent = 'Successfully connected to MetaMask!';
+                    
+                    // Display account info
+                    accountInfoDiv.innerHTML = `
+                        <h3>Account Information</h3>
+                        <p><strong>Address:</strong> ${accounts[0]}</p>
+                    `;
+                    
+                    // Get network info
+                    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                    let networkName = 'Unknown Network';
+                    
+                    switch (chainId) {
+                        case '0x1':
+                            networkName = 'Ethereum Mainnet';
+                            break;
+                        case '0x3':
+                            networkName = 'Ropsten Testnet';
+                            break;
+                        case '0x4':
+                            networkName = 'Rinkeby Testnet';
+                            break;
+                        case '0x5':
+                            networkName = 'Goerli Testnet';
+                            break;
+                        case '0x539':
+                            networkName = 'Ganache Local';
+                            break;
+                        default:
+                            networkName = 'Local Network (' + chainId + ')';
+                    }
+                    
+                    accountInfoDiv.innerHTML += `<p><strong>Network:</strong> ${networkName}</p>`;
+                } else {
+                    statusDiv.className = 'error';
+                    statusDiv.textContent = 'No accounts found. Please unlock MetaMask.';
+                }
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
+                statusDiv.className = 'error';
+                statusDiv.textContent = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

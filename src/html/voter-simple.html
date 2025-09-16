@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Voter Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #006400;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .election-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .election-card h3 {
+            margin-top: 0;
+            color: #006400;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        
+        .status-upcoming {
+            background-color: #fcf8e3;
+            color: #8a6d3b;
+        }
+        
+        .status-ended {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        
+        .candidate-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        
+        .candidate-option input {
+            margin-right: 10px;
+        }
+        
+        .candidate-info {
+            flex-grow: 1;
+        }
+        
+        .candidate-name {
+            font-weight: bold;
+        }
+        
+        .candidate-party {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-secondary {
+            background-color: #2196F3;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #0b7dda;
+        }
+        
+        .btn-disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+        
+        .metamask-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        
+        .connected {
+            color: #4CAF50;
+        }
+        
+        .not-connected {
+            color: #f44336;
+        }
+        
+        .results-container {
+            margin-top: 20px;
+        }
+        
+        .result-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .result-name {
+            width: 150px;
+            font-weight: bold;
+        }
+        
+        .result-bar-outer {
+            flex-grow: 1;
+            height: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+        
+        .result-bar-inner {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 10px;
+        }
+        
+        .result-percentage {
+            width: 50px;
+            text-align: right;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="metamask-status not-connected" id="metamaskStatus" onclick="connectMetaMask()">
+        MetaMask: Not Connected
+    </div>
+    
+    <div class="container">
+        <h1>Murang'a University Voting System</h1>
+        <h2>Available Elections</h2>
+        
+        <div id="electionsContainer">
+            <p>Loading elections...</p>
+        </div>
+    </div>
+    
+    <div class="container" id="votingContainer" style="display: none;">
+        <h2 id="electionTitle">Election Title</h2>
+        <p id="electionDates">Voting Period: DD/MM/YYYY - DD/MM/YYYY</p>
+        
+        <div id="candidatesVotingContainer">
+            <!-- Candidates will be loaded here -->
+        </div>
+        
+        <button id="voteButton" onclick="castVote()">Cast Your Vote</button>
+        <div id="voteStatus" class="status"></div>
+    </div>
+    
+    <div class="container" id="resultsContainer" style="display: none;">
+        <h2 id="resultsTitle">Election Results</h2>
+        <p id="resultsDates">Voting Period: DD/MM/YYYY - DD/MM/YYYY</p>
+        
+        <div class="results-container" id="resultsContent">
+            <!-- Results will be loaded here -->
+        </div>
+        
+        <button class="btn-secondary" onclick="backToElections()">Back to Elections</button>
+    </div>
+    
+    <script>
+        // Global variables
+        let isConnected = false;
+        let account = null;
+        let selectedCandidate = null;
+        
+        // Sample elections data
+        const elections = [
+            {
+                id: 1,
+                name: "Student Council Elections 2025",
+                startDate: "01/05/2025",
+                endDate: "10/05/2025",
+                status: "active",
+                candidates: [
+                    { id: 1, name: "John Doe", party: "Student Unity Party", votes: 45 },
+                    { id: 2, name: "Jane Smith", party: "Progressive Students Alliance", votes: 30 },
+                    { id: 3, name: "Michael Johnson", party: "Independent", votes: 25 }
+                ]
+            },
+            {
+                id: 2,
+                name: "Department Representatives",
+                startDate: "15/04/2025",
+                endDate: "20/04/2025",
+                status: "ended",
+                candidates: [
+                    { id: 1, name: "Alice Williams", party: "Computer Science", votes: 120 },
+                    { id: 2, name: "Bob Brown", party: "Engineering", votes: 85 },
+                    { id: 3, name: "Carol Davis", party: "Business", votes: 95 },
+                    { id: 4, name: "David Wilson", party: "Arts", votes: 65 }
+                ]
+            },
+            {
+                id: 3,
+                name: "Sports Committee Election",
+                startDate: "01/06/2025",
+                endDate: "05/06/2025",
+                status: "upcoming",
+                candidates: [
+                    { id: 1, name: "Emma Martinez", party: "Athletics Department", votes: 0 },
+                    { id: 2, name: "Frank Robinson", party: "Football Club", votes: 0 },
+                    { id: 3, name: "Grace Lee", party: "Basketball Team", votes: 0 }
+                ]
+            }
+        ];
+        
+        // Connect to MetaMask
+        async function connectMetaMask() {
+            const metamaskStatus = document.getElementById('metamaskStatus');
+            
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    
+                    if (accounts.length > 0) {
+                        account = accounts[0];
+                        isConnected = true;
+                        
+                        metamaskStatus.className = 'metamask-status connected';
+                        metamaskStatus.textContent = `MetaMask: Connected (${accounts[0].substring(0, 6)}...${accounts[0].substring(38)})`;
+                        
+                        // Show success message
+                        showStatus('success', 'Successfully connected to MetaMask!');
+                        
+                        return true;
+                    }
+                } catch (error) {
+                    console.error('Error connecting to MetaMask:', error);
+                    
+                    metamaskStatus.className = 'metamask-status not-connected';
+                    metamaskStatus.textContent = 'MetaMask: Connection Error';
+                    
+                    // Show error message
+                    showStatus('error', 'Error connecting to MetaMask: ' + error.message);
+                }
+            } else {
+                alert('MetaMask is not installed. Please install MetaMask to use this application.');
+                
+                metamaskStatus.className = 'metamask-status not-connected';
+                metamaskStatus.textContent = 'MetaMask: Not Installed';
+            }
+            
+            return false;
+        }
+        
+        // Load elections
+        function loadElections() {
+            const container = document.getElementById('electionsContainer');
+            
+            if (elections.length === 0) {
+                container.innerHTML = '<p>No elections available at this time.</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            elections.forEach(election => {
+                let statusClass = '';
+                let statusText = '';
+                let actionButton = '';
+                
+                switch (election.status) {
+                    case 'active':
+                        statusClass = 'status-active';
+                        statusText = 'Active';
+                        actionButton = `<button onclick="openVoting(${election.id})">Vote Now</button>`;
+                        break;
+                    case 'upcoming':
+                        statusClass = 'status-upcoming';
+                        statusText = 'Upcoming';
+                        actionButton = `<button class="btn-disabled" disabled>Not Started Yet</button>`;
+                        break;
+                    case 'ended':
+                        statusClass = 'status-ended';
+                        statusText = 'Ended';
+                        actionButton = `<button class="btn-secondary" onclick="viewResults(${election.id})">View Results</button>`;
+                        break;
+                }
+                
+                html += `
+                    <div class="election-card">
+                        <h3>${election.name}</h3>
+                        <p><strong>Voting Period:</strong> ${election.startDate} to ${election.endDate}</p>
+                        <p><strong>Status:</strong> <span class="status-badge ${statusClass}">${statusText}</span></p>
+                        <p><strong>Candidates:</strong> ${election.candidates.length}</p>
+                        ${actionButton}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Open voting interface
+        function openVoting(electionId) {
+            // Check if connected to MetaMask
+            if (!isConnected) {
+                connectMetaMask().then(connected => {
+                    if (connected) {
+                        showVotingInterface(electionId);
+                    } else {
+                        showStatus('error', 'Please connect to MetaMask first.');
+                    }
+                });
+            } else {
+                showVotingInterface(electionId);
+            }
+        }
+        
+        // Show voting interface
+        function showVotingInterface(electionId) {
+            const election = elections.find(e => e.id === electionId);
+            
+            if (!election) {
+                showStatus('error', 'Election not found.');
+                return;
+            }
+            
+            // Hide elections container and show voting container
+            document.getElementById('electionsContainer').parentNode.style.display = 'none';
+            const votingContainer = document.getElementById('votingContainer');
+            votingContainer.style.display = 'block';
+            
+            // Set election details
+            document.getElementById('electionTitle').textContent = election.name;
+            document.getElementById('electionDates').textContent = `Voting Period: ${election.startDate} to ${election.endDate}`;
+            
+            // Load candidates
+            const candidatesContainer = document.getElementById('candidatesVotingContainer');
+            let html = '';
+            
+            election.candidates.forEach(candidate => {
+                html += `
+                    <div class="candidate-option">
+                        <input type="radio" name="candidate" id="candidate-${candidate.id}" value="${candidate.id}" onchange="selectCandidate(${candidate.id})">
+                        <div class="candidate-info">
+                            <div class="candidate-name">${candidate.name}</div>
+                            <div class="candidate-party">${candidate.party}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            candidatesContainer.innerHTML = html;
+            
+            // Reset selected candidate
+            selectedCandidate = null;
+            
+            // Disable vote button initially
+            document.getElementById('voteButton').disabled = true;
+            document.getElementById('voteButton').classList.add('btn-disabled');
+            
+            // Clear status
+            document.getElementById('voteStatus').className = 'status';
+            document.getElementById('voteStatus').textContent = '';
+        }
+        
+        // Select candidate
+        function selectCandidate(candidateId) {
+            selectedCandidate = candidateId;
+            
+            // Enable vote button
+            document.getElementById('voteButton').disabled = false;
+            document.getElementById('voteButton').classList.remove('btn-disabled');
+        }
+        
+        // Cast vote
+        function castVote() {
+            if (!selectedCandidate) {
+                showStatus('error', 'Please select a candidate.');
+                return;
+            }
+            
+            // Disable vote button
+            const voteButton = document.getElementById('voteButton');
+            voteButton.disabled = true;
+            voteButton.textContent = 'Submitting Vote...';
+            voteButton.classList.add('btn-disabled');
+            
+            // Simulate blockchain interaction
+            setTimeout(() => {
+                // Show success message
+                showStatus('success', 'Your vote has been cast successfully!');
+                
+                // Update button
+                voteButton.textContent = 'Vote Recorded';
+                
+                // Disable all radio buttons
+                const radioButtons = document.querySelectorAll('input[name="candidate"]');
+                radioButtons.forEach(radio => {
+                    radio.disabled = true;
+                });
+                
+                // Add back button
+                setTimeout(() => {
+                    const backButton = document.createElement('button');
+                    backButton.className = 'btn-secondary';
+                    backButton.textContent = 'Back to Elections';
+                    backButton.style.marginLeft = '10px';
+                    backButton.onclick = backToElections;
+                    
+                    voteButton.parentNode.appendChild(backButton);
+                }, 1000);
+            }, 2000);
+        }
+        
+        // View results
+        function viewResults(electionId) {
+            const election = elections.find(e => e.id === electionId);
+            
+            if (!election) {
+                showStatus('error', 'Election not found.');
+                return;
+            }
+            
+            // Hide elections container and show results container
+            document.getElementById('electionsContainer').parentNode.style.display = 'none';
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.style.display = 'block';
+            
+            // Set election details
+            document.getElementById('resultsTitle').textContent = election.name + ' - Results';
+            document.getElementById('resultsDates').textContent = `Voting Period: ${election.startDate} to ${election.endDate}`;
+            
+            // Calculate total votes
+            const totalVotes = election.candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
+            
+            // Sort candidates by votes (descending)
+            const sortedCandidates = [...election.candidates].sort((a, b) => b.votes - a.votes);
+            
+            // Load results
+            const resultsContent = document.getElementById('resultsContent');
+            let html = `<p><strong>Total Votes Cast:</strong> ${totalVotes}</p>`;
+            
+            sortedCandidates.forEach(candidate => {
+                const percentage = totalVotes > 0 ? (candidate.votes / totalVotes * 100).toFixed(1) : 0;
+                
+                html += `
+                    <div class="result-bar">
+                        <div class="result-name">${candidate.name}</div>
+                        <div class="result-bar-outer">
+                            <div class="result-bar-inner" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="result-percentage">${percentage}%</div>
+                    </div>
+                    <div style="margin-left: 150px; margin-bottom: 15px; color: #666;">
+                        ${candidate.party} - ${candidate.votes} votes
+                    </div>
+                `;
+            });
+            
+            resultsContent.innerHTML = html;
+        }
+        
+        // Back to elections
+        function backToElections() {
+            // Hide voting and results containers, show elections container
+            document.getElementById('votingContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('electionsContainer').parentNode.style.display = 'block';
+            
+            // Reset selected candidate
+            selectedCandidate = null;
+        }
+        
+        // Show status message
+        function showStatus(type, message) {
+            const statusElement = document.getElementById('voteStatus');
+            statusElement.className = 'status ' + type;
+            statusElement.textContent = message;
+            
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                statusElement.className = 'status';
+                statusElement.textContent = '';
+            }, 5000);
+        }
+        
+        // Initialize
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Load elections
+            loadElections();
+            
+            // Check if MetaMask is already connected
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        account = accounts[0];
+                        isConnected = true;
+                        
+                        const metamaskStatus = document.getElementById('metamaskStatus');
+                        metamaskStatus.className = 'metamask-status connected';
+                        metamaskStatus.textContent = `MetaMask: Connected (${accounts[0].substring(0, 6)}...${accounts[0].substring(38)})`;
+                    }
+                } catch (error) {
+                    console.error('Error checking MetaMask connection:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

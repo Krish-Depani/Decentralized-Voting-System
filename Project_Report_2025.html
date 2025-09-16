@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Decentralized Voting System Using Ethereum Blockchain</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            margin: 40px;
+            line-height: 1.5;
+            color: #333;
+        }
+        h1, h2, h3, h4 {
+            color: #006400;
+            font-weight: bold;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24pt;
+            margin-bottom: 5px;
+        }
+        h2 {
+            font-size: 18pt;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        h3 {
+            font-size: 14pt;
+            margin-top: 15px;
+        }
+        p {
+            text-align: justify;
+            margin-bottom: 10px;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            font-size: 90%;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        ul, ol {
+            margin-bottom: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .author {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+    <h1>Decentralized Voting System Using Ethereum Blockchain</h1>
+<h2>Project Report 2025 Edition</h2>
+<h3>Prepared by: Zophlic</h3>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#project-overview">Project Overview</a></li>
+<li><a href="#system-architecture">System Architecture</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+<li><a href="#key-features">Key Features</a></li>
+<li><a href="#technical-challenges-and-solutions">Technical Challenges and Solutions</a></li>
+<li><a href="#user-interface">User Interface</a></li>
+<li><a href="#security-considerations">Security Considerations</a></li>
+<li><a href="#testing-and-validation">Testing and Validation</a></li>
+<li><a href="#future-enhancements">Future Enhancements</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#references">References</a></li>
+</ol>
+<h2>Introduction</h2>
+<p>The Decentralized Voting System using Ethereum Blockchain is a secure and transparent solution for conducting elections at Murang'a University of Technology. This system leverages blockchain technology to ensure tamper-proof voting records, enabling users to cast votes remotely while maintaining anonymity and preventing fraud.</p>
+<p>The 2025 Edition of this system introduces significant improvements to the user interface, security features, and overall functionality. The system now supports multiple simultaneous elections, improved account management, and a more intuitive admin experience.</p>
+<h2>Project Overview</h2>
+<h3>Motivation</h3>
+<p>Traditional voting systems face numerous challenges including lack of transparency, vulnerability to tampering, and limited accessibility. The Decentralized Voting System addresses these issues by utilizing Ethereum blockchain technology to create an immutable record of votes that can be verified by anyone while maintaining voter privacy.</p>
+<h3>Objectives</h3>
+<ol>
+<li>Create a secure and transparent voting platform</li>
+<li>Eliminate intermediaries in the voting process</li>
+<li>Ensure voter anonymity while preventing double voting</li>
+<li>Provide real-time vote tallying and results</li>
+<li>Support multiple simultaneous elections</li>
+<li>Improve user experience for both administrators and voters</li>
+<li>Enable multi-device voting</li>
+</ol>
+<h2>System Architecture</h2>
+<p>The Decentralized Voting System follows a three-tier architecture:</p>
+<ol>
+<li><strong>Frontend Layer</strong>: HTML, CSS, and JavaScript for the user interface</li>
+<li><strong>Backend Layer</strong>: Node.js server and FastAPI for database operations</li>
+<li><strong>Blockchain Layer</strong>: Ethereum smart contracts for vote storage and verification</li>
+</ol>
+<h3>Components</h3>
+<h4>Frontend Components</h4>
+<ul>
+<li>Admin Portal: For election creation and management</li>
+<li>Voter Interface: For casting votes and viewing results</li>
+<li>Authentication System: For secure user login</li>
+</ul>
+<h4>Backend Components</h4>
+<ul>
+<li>Node.js Server: Serves the web application</li>
+<li>FastAPI Server: Handles database operations</li>
+<li>MySQL Database: Stores user credentials and roles</li>
+</ul>
+<h4>Blockchain Components</h4>
+<ul>
+<li>Smart Contracts: Implemented in Solidity</li>
+<li>Ethereum Network: For deploying and interacting with smart contracts</li>
+<li>MetaMask: For wallet management and transaction signing</li>
+</ul>
+<h3>Data Flow</h3>
+<ol>
+<li>Administrators create elections through the admin portal</li>
+<li>Election data is stored on the Ethereum blockchain</li>
+<li>Voters authenticate using JWT tokens</li>
+<li>Votes are cast as transactions on the blockchain</li>
+<li>Results are tallied in real-time from the blockchain data</li>
+</ol>
+<h2>Implementation Details</h2>
+<h3>Technologies Used</h3>
+<ul>
+<li><strong>Frontend</strong>: HTML5, CSS3, JavaScript, jQuery</li>
+<li><strong>Backend</strong>: Node.js, FastAPI, Python</li>
+<li><strong>Database</strong>: MySQL</li>
+<li><strong>Blockchain</strong>: Ethereum, Solidity, Web3.js</li>
+<li><strong>Authentication</strong>: JWT (JSON Web Tokens)</li>
+<li><strong>Development Tools</strong>: Truffle, Ganache, MetaMask</li>
+</ul>
+<h3>Smart Contracts</h3>
+<p>The system utilizes two main smart contracts:</p>
+<ol>
+<li><strong>Voting Contract</strong>: Handles individual elections</li>
+<li>Stores candidate information</li>
+<li>Records votes</li>
+<li>Prevents double voting</li>
+<li>
+<p>Calculates results</p>
+</li>
+<li>
+<p><strong>Election Factory Contract</strong>: Manages multiple elections</p>
+</li>
+<li>Creates new election instances</li>
+<li>Tracks active elections</li>
+<li>Manages election lifecycle</li>
+</ol>
+<h3>Database Schema</h3>
+<p>The database contains a single table for voter authentication:</p>
+<pre><code class="language-sql">CREATE TABLE voters (
+  voter_id VARCHAR(36) PRIMARY KEY NOT NULL,
+  role ENUM('admin', 'user') NOT NULL,
+  password VARCHAR(255) NOT NULL
+);
+</code></pre>
+<h3>API Endpoints</h3>
+<p>The FastAPI server provides the following endpoints:</p>
+<ul>
+<li><code>/login</code>: Authenticates users and issues JWT tokens</li>
+<li><code>/verify</code>: Verifies JWT tokens</li>
+<li><code>/voters</code>: Manages voter information</li>
+</ul>
+<h2>Key Features</h2>
+<h3>Core Features</h3>
+<ul>
+<li><strong>Secure Authentication</strong>: JWT-based authentication system</li>
+<li><strong>Tamper-Proof Voting</strong>: Votes stored on the Ethereum blockchain</li>
+<li><strong>Transparent Process</strong>: All transactions visible on the blockchain</li>
+<li><strong>Real-Time Results</strong>: Immediate vote tallying</li>
+<li><strong>Role-Based Access</strong>: Different interfaces for admins and voters</li>
+</ul>
+<h3>2025 Edition Enhancements</h3>
+<ul>
+<li><strong>Multiple Simultaneous Elections</strong>: Support for running multiple elections concurrently</li>
+<li><strong>Improved MetaMask Integration</strong>: Better account switching and connection handling</li>
+<li><strong>DD/MM/YYYY Date Format</strong>: More intuitive date inputs for international users</li>
+<li><strong>Enhanced UI/UX</strong>: Improved user interface with Murang'a University branding</li>
+<li><strong>Comprehensive Debugging</strong>: Detailed error messages and troubleshooting tools</li>
+<li><strong>Multi-Device Support</strong>: Responsive design for voting from various devices</li>
+</ul>
+<h3>Simplified Storage-Based System</h3>
+<p>For testing and demonstration purposes, a simplified version was implemented using browser localStorage:</p>
+<ul>
+<li><strong>Standalone Interfaces</strong>: Independent admin and voter pages</li>
+<li><strong>Persistent Storage</strong>: Elections and votes stored in localStorage</li>
+<li><strong>MetaMask Authentication</strong>: Uses MetaMask for identity verification only</li>
+<li><strong>Double-Vote Prevention</strong>: Tracks voter addresses to prevent multiple votes</li>
+<li><strong>Real-Time Updates</strong>: Immediate result visualization</li>
+</ul>
+<h2>Technical Challenges and Solutions</h2>
+<h3>Challenge 1: MetaMask Connection Issues</h3>
+<p><strong>Problem</strong>: Users experienced difficulties connecting to MetaMask, particularly when switching accounts.</p>
+<p><strong>Solution</strong>: Implemented a direct MetaMask connection script that:
+- Provides clear connection status indicators
+- Handles account switching gracefully
+- Includes comprehensive error messages
+- Offers a troubleshooting guide for common issues</p>
+<h3>Challenge 2: Date Format Standardization</h3>
+<p><strong>Problem</strong>: The original system used different date formats across interfaces.</p>
+<p><strong>Solution</strong>: Standardized on DD/MM/YYYY format with:
+- Separate input fields for day, month, and year
+- Input validation for valid dates
+- Consistent display format throughout the application</p>
+<h3>Challenge 3: Multiple Election Support</h3>
+<p><strong>Problem</strong>: The original system supported only one active election at a time.</p>
+<p><strong>Solution</strong>: Implemented an Election Factory contract that:
+- Creates and tracks multiple election instances
+- Manages the lifecycle of each election independently
+- Provides a unified interface for election management</p>
+<h3>Challenge 4: Browser Compatibility</h3>
+<p><strong>Problem</strong>: The application had inconsistent behavior across different browsers.</p>
+<p><strong>Solution</strong>: 
+- Implemented feature detection instead of browser detection
+- Used polyfills for older browsers
+- Tested extensively across Chrome, Firefox, Safari, and Edge</p>
+<h2>User Interface</h2>
+<h3>Admin Portal</h3>
+<p>The admin portal provides the following functionality:</p>
+<ul>
+<li><strong>Election Creation</strong>: Create new elections with custom names, dates, and candidates</li>
+<li><strong>Candidate Management</strong>: Add, edit, and remove candidates</li>
+<li><strong>Election Monitoring</strong>: View active, upcoming, and completed elections</li>
+<li><strong>Result Visualization</strong>: See vote counts and percentages with graphical representation</li>
+</ul>
+<h3>Voter Interface</h3>
+<p>The voter interface offers:</p>
+<ul>
+<li><strong>Election Browsing</strong>: View available elections with status indicators</li>
+<li><strong>Voting</strong>: Cast votes in active elections</li>
+<li><strong>Result Viewing</strong>: See election results with visual representations</li>
+<li><strong>Vote Verification</strong>: Confirm that votes were recorded correctly</li>
+</ul>
+<h3>UI Improvements</h3>
+<p>The 2025 Edition includes several UI improvements:</p>
+<ul>
+<li><strong>Responsive Design</strong>: Adapts to different screen sizes</li>
+<li><strong>Intuitive Navigation</strong>: Clear pathways for different user actions</li>
+<li><strong>Visual Feedback</strong>: Status indicators and confirmation messages</li>
+<li><strong>Accessibility</strong>: Improved keyboard navigation and screen reader support</li>
+<li><strong>Error Handling</strong>: Clear error messages with suggested solutions</li>
+</ul>
+<h2>Security Considerations</h2>
+<h3>Blockchain Security</h3>
+<ul>
+<li><strong>Immutable Records</strong>: Once recorded, votes cannot be altered</li>
+<li><strong>Distributed Ledger</strong>: No single point of failure</li>
+<li><strong>Smart Contract Auditing</strong>: Contracts reviewed for vulnerabilities</li>
+</ul>
+<h3>Application Security</h3>
+<ul>
+<li><strong>JWT Authentication</strong>: Secure token-based authentication</li>
+<li><strong>Input Validation</strong>: All user inputs validated server-side</li>
+<li><strong>HTTPS</strong>: Encrypted communication between client and server</li>
+<li><strong>Password Hashing</strong>: Secure storage of user credentials</li>
+</ul>
+<h3>User Privacy</h3>
+<ul>
+<li><strong>Anonymous Voting</strong>: Votes linked to Ethereum addresses, not personal identities</li>
+<li><strong>Private Keys</strong>: Users maintain control of their private keys</li>
+<li><strong>No Personal Data</strong>: Minimal personal information stored in the system</li>
+</ul>
+<h2>Testing and Validation</h2>
+<h3>Testing Methodology</h3>
+<ul>
+<li><strong>Unit Testing</strong>: Individual components tested in isolation</li>
+<li><strong>Integration Testing</strong>: Interactions between components verified</li>
+<li><strong>End-to-End Testing</strong>: Complete user workflows tested</li>
+<li><strong>Security Testing</strong>: Vulnerability assessment and penetration testing</li>
+</ul>
+<h3>Test Scenarios</h3>
+<ol>
+<li><strong>Election Creation</strong>: Verify administrators can create valid elections</li>
+<li><strong>Voting Process</strong>: Ensure voters can cast votes successfully</li>
+<li><strong>Double Voting Prevention</strong>: Verify users cannot vote multiple times</li>
+<li><strong>Result Calculation</strong>: Confirm accurate vote tallying</li>
+<li><strong>Error Handling</strong>: Test system response to invalid inputs and edge cases</li>
+</ol>
+<h3>Validation Results</h3>
+<p>The system successfully passed all test scenarios, demonstrating:
+- Reliable election creation and management
+- Secure and accurate voting process
+- Correct result calculation and display
+- Appropriate error handling and user feedback</p>
+<h2>Future Enhancements</h2>
+<h3>Planned Improvements</h3>
+<ol>
+<li><strong>Mobile Application</strong>: Native mobile apps for Android and iOS</li>
+<li><strong>Biometric Authentication</strong>: Fingerprint or facial recognition for voter verification</li>
+<li><strong>Advanced Analytics</strong>: Detailed voting statistics and patterns</li>
+<li><strong>Internationalization</strong>: Support for multiple languages</li>
+<li><strong>Offline Voting</strong>: Capability to vote without continuous internet connection</li>
+</ol>
+<h3>Windows Executable Packaging</h3>
+<p>The application can be packaged as a Windows executable (.exe or .msi) for easier distribution:</p>
+<ol>
+<li><strong>Using Electron</strong>:</li>
+<li>Wrap the web application in an Electron container</li>
+<li>Package with electron-builder to create a Windows installer</li>
+<li>
+<p>Include all dependencies (Node.js, blockchain tools)</p>
+</li>
+<li>
+<p><strong>Using Windows Installer XML (WiX)</strong>:</p>
+</li>
+<li>Create a traditional Windows installer (.msi)</li>
+<li>Support for Group Policy deployment</li>
+<li>
+<p>Better for enterprise environments</p>
+</li>
+<li>
+<p><strong>Using NSIS</strong>:</p>
+</li>
+<li>Create a customizable installer with NSIS scripts</li>
+<li>Smaller installer size</li>
+<li>Extensive scripting capabilities</li>
+</ol>
+<h2>Conclusion</h2>
+<p>The Decentralized Voting System using Ethereum Blockchain represents a significant advancement in election technology. By leveraging blockchain's inherent security and transparency, the system provides a trustworthy platform for conducting elections at Murang'a University of Technology.</p>
+<p>The 2025 Edition builds upon the original system with improved usability, enhanced features, and better security. The addition of multiple election support and improved MetaMask integration addresses key limitations of the previous version.</p>
+<p>The simplified storage-based implementation provides an accessible entry point for testing and demonstration, while the full blockchain implementation offers the security and transparency benefits of distributed ledger technology.</p>
+<p>As blockchain technology continues to evolve, this system can serve as a foundation for future voting applications, potentially extending beyond educational institutions to broader electoral systems.</p>
+<h2>References</h2>
+<ol>
+<li>Ethereum Documentation: https://ethereum.org/en/developers/docs/</li>
+<li>Web3.js Documentation: https://web3js.readthedocs.io/</li>
+<li>Solidity Documentation: https://docs.soliditylang.org/</li>
+<li>FastAPI Documentation: https://fastapi.tiangolo.com/</li>
+<li>JWT Authentication: https://jwt.io/</li>
+<li>MetaMask Documentation: https://docs.metamask.io/</li>
+<li>Truffle Suite Documentation: https://trufflesuite.com/docs/</li>
+<li>Original Project Repository: https://github.com/Krish-Depani/Decentralized-Voting-System-Using-Ethereum-Blockchain</li>
+</ol>
+</body>
+</html>

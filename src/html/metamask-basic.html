@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic MetaMask Connection</title>
+</head>
+<body>
+    <h1>Basic MetaMask Connection</h1>
+    
+    <button id="connectBtn">Connect to MetaMask</button>
+    
+    <p id="status"></p>
+    
+    <script>
+        document.getElementById('connectBtn').onclick = async function() {
+            const statusElement = document.getElementById('status');
+            
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    statusElement.textContent = 'MetaMask is not installed';
+                    return;
+                }
+                
+                console.log('Requesting accounts...');
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                console.log('Accounts:', accounts);
+                
+                if (accounts.length > 0) {
+                    statusElement.textContent = 'Connected: ' + accounts[0];
+                } else {
+                    statusElement.textContent = 'No accounts found';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                statusElement.textContent = 'Error: ' + error.message;
+            }
+        };
+    </script>
+</body>
+</html>

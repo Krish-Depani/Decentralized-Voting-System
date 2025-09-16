@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MUT Voting System - Voter Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1, h2, h3 {
+            color: #006400;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            margin-bottom: 5px;
+        }
+        
+        .header h2 {
+            margin-top: 0;
+            color: #666;
+            font-weight: normal;
+        }
+        
+        .metamask-status {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .status-connected {
+            background-color: #28a745;
+        }
+        
+        .status-disconnected {
+            background-color: #dc3545;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .elections-list {
+            margin-top: 20px;
+        }
+        
+        .election-card {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .election-card h3 {
+            margin-top: 0;
+        }
+        
+        .election-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-upcoming {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-ended {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Voting interface */
+        .voting-interface {
+            margin-top: 20px;
+        }
+        
+        .candidate-option {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .candidate-option input[type="radio"] {
+            margin-right: 15px;
+        }
+        
+        .candidate-info {
+            flex-grow: 1;
+        }
+        
+        .candidate-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .candidate-party {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Results display */
+        .results-container {
+            margin-top: 20px;
+        }
+        
+        .result-bar {
+            margin-bottom: 15px;
+        }
+        
+        .result-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .result-name {
+            font-weight: bold;
+        }
+        
+        .result-percentage {
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 10px;
+        }
+        
+        /* Debug panel - can be hidden in production */
+        .debug-panel {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .debug-panel pre {
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Murang'a University of Technology</h1>
+            <h2>Decentralized Voting System - Voter Portal</h2>
+        </div>
+        
+        <div class="metamask-status">
+            <div>
+                <span class="status-indicator status-disconnected" id="statusIndicator"></span>
+                <span id="connectionStatus">Not connected to MetaMask</span>
+            </div>
+            <button id="connectBtn">Connect to MetaMask</button>
+        </div>
+        
+        <div id="accountInfo" class="hidden">
+            <p><strong>Account:</strong> <span id="accountAddress"></span></p>
+            <p><strong>Network:</strong> <span id="networkName"></span></p>
+        </div>
+        
+        <div id="voterContent" class="hidden">
+            <h2>Available Elections</h2>
+            <div id="electionsList" class="elections-list">
+                <p>Loading elections...</p>
+            </div>
+        </div>
+        
+        <!-- Voting Interface (initially hidden) -->
+        <div id="votingInterface" class="hidden">
+            <h2 id="votingTitle">Election Title</h2>
+            <p id="votingPeriod">Voting Period: DD/MM/YYYY to DD/MM/YYYY</p>
+            
+            <div class="voting-interface">
+                <div id="candidateOptions">
+                    <!-- Candidate options will be loaded here -->
+                </div>
+                
+                <button id="voteBtn" disabled>Cast Your Vote</button>
+                <button id="backToElectionsBtn" class="btn-secondary">Back to Elections</button>
+            </div>
+            
+            <div id="votingStatus" class="status-message hidden"></div>
+        </div>
+        
+        <!-- Results Interface (initially hidden) -->
+        <div id="resultsInterface" class="hidden">
+            <h2 id="resultsTitle">Election Results</h2>
+            <p id="resultsPeriod">Voting Period: DD/MM/YYYY to DD/MM/YYYY</p>
+            
+            <div class="results-container" id="resultsContainer">
+                <!-- Results will be loaded here -->
+            </div>
+            
+            <button id="backFromResultsBtn" class="btn-secondary">Back to Elections</button>
+        </div>
+    </div>
+    
+    <div class="footer">
+        &copy; 2025 Murang'a University of Technology - Decentralized Voting System
+    </div>
+    
+    <!-- Debug panel - can be hidden in production -->
+    <div class="container debug-panel">
+        <h3>Debug Information</h3>
+        <pre id="debugOutput">Debug information will appear here...</pre>
+    </div>
+    
+    <script>
+        // Global variables
+        let isConnected = false;
+        let accounts = [];
+        let selectedCandidate = null;
+        let currentElection = null;
+        
+        // DOM elements
+        const statusIndicator = document.getElementById('statusIndicator');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const connectBtn = document.getElementById('connectBtn');
+        const accountInfo = document.getElementById('accountInfo');
+        const accountAddress = document.getElementById('accountAddress');
+        const networkName = document.getElementById('networkName');
+        const voterContent = document.getElementById('voterContent');
+        const electionsList = document.getElementById('electionsList');
+        const votingInterface = document.getElementById('votingInterface');
+        const votingTitle = document.getElementById('votingTitle');
+        const votingPeriod = document.getElementById('votingPeriod');
+        const candidateOptions = document.getElementById('candidateOptions');
+        const voteBtn = document.getElementById('voteBtn');
+        const backToElectionsBtn = document.getElementById('backToElectionsBtn');
+        const votingStatus = document.getElementById('votingStatus');
+        const resultsInterface = document.getElementById('resultsInterface');
+        const resultsTitle = document.getElementById('resultsTitle');
+        const resultsPeriod = document.getElementById('resultsPeriod');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const backFromResultsBtn = document.getElementById('backFromResultsBtn');
+        const debugOutput = document.getElementById('debugOutput');
+        
+        // Sample elections data
+        const elections = [
+            {
+                id: 1,
+                name: "Student Council Elections 2025",
+                startDate: "01/05/2025",
+                endDate: "10/05/2025",
+                status: "active",
+                candidates: [
+                    { id: 1, name: "John Doe", party: "Student Unity Party", votes: 45 },
+                    { id: 2, name: "Jane Smith", party: "Progressive Students Alliance", votes: 30 },
+                    { id: 3, name: "Michael Johnson", party: "Independent", votes: 25 }
+                ]
+            },
+            {
+                id: 2,
+                name: "Department Representatives",
+                startDate: "15/04/2025",
+                endDate: "20/04/2025",
+                status: "active",
+                candidates: [
+                    { id: 1, name: "Alice Williams", party: "Computer Science", votes: 120 },
+                    { id: 2, name: "Bob Brown", party: "Engineering", votes: 85 },
+                    { id: 3, name: "Carol Davis", party: "Business", votes: 95 },
+                    { id: 4, name: "David Wilson", party: "Arts", votes: 65 }
+                ]
+            },
+            {
+                id: 3,
+                name: "Sports Committee Election",
+                startDate: "01/03/2025",
+                endDate: "05/03/2025",
+                status: "ended",
+                candidates: [
+                    { id: 1, name: "Emma Martinez", party: "Athletics Department", votes: 75 },
+                    { id: 2, name: "Frank Robinson", party: "Football Club", votes: 120 },
+                    { id: 3, name: "Grace Lee", party: "Basketball Team", votes: 95 }
+                ]
+            }
+        ];
+        
+        // Debug log function
+        function log(message) {
+            console.log(message);
+            debugOutput.textContent += "\n" + message;
+        }
+        
+        // Initialize
+        function init() {
+            log("Initializing application...");
+            
+            // Check if MetaMask is installed
+            if (typeof window.ethereum !== 'undefined') {
+                log("MetaMask is installed");
+                
+                // Add event listeners
+                connectBtn.addEventListener('click', connectToMetaMask);
+                voteBtn.addEventListener('click', castVote);
+                backToElectionsBtn.addEventListener('click', showElectionsList);
+                backFromResultsBtn.addEventListener('click', showElectionsList);
+                
+                // Check if already connected
+                checkConnection();
+                
+                // Listen for account changes
+                window.ethereum.on('accountsChanged', handleAccountsChanged);
+                
+                // Listen for chain changes
+                window.ethereum.on('chainChanged', () => window.location.reload());
+            } else {
+                log("MetaMask is not installed");
+                connectionStatus.textContent = "MetaMask is not installed. Please install MetaMask extension.";
+                connectBtn.disabled = true;
+            }
+        }
+        
+        // Check if already connected to MetaMask
+        async function checkConnection() {
+            try {
+                log("Checking existing connection...");
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                
+                if (accounts.length > 0) {
+                    log("Already connected to account: " + accounts[0]);
+                    handleAccountsChanged(accounts);
+                } else {
+                    log("Not connected to any accounts");
+                }
+            } catch (error) {
+                log("Error checking connection: " + error.message);
+            }
+        }
+        
+        // Connect to MetaMask
+        async function connectToMetaMask() {
+            try {
+                log("Requesting connection to MetaMask...");
+                connectionStatus.textContent = "Connecting to MetaMask...";
+                
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                handleAccountsChanged(accounts);
+            } catch (error) {
+                log("Error connecting to MetaMask: " + error.message);
+                connectionStatus.textContent = "Error connecting to MetaMask: " + error.message;
+            }
+        }
+        
+        // Handle accounts changed
+        function handleAccountsChanged(newAccounts) {
+            if (newAccounts.length === 0) {
+                log("Disconnected from MetaMask");
+                isConnected = false;
+                statusIndicator.className = "status-indicator status-disconnected";
+                connectionStatus.textContent = "Not connected to MetaMask";
+                accountInfo.classList.add('hidden');
+                voterContent.classList.add('hidden');
+            } else {
+                log("Connected to account: " + newAccounts[0]);
+                accounts = newAccounts;
+                isConnected = true;
+                
+                // Update UI
+                statusIndicator.className = "status-indicator status-connected";
+                connectionStatus.textContent = "Connected to MetaMask";
+                accountAddress.textContent = accounts[0];
+                accountInfo.classList.remove('hidden');
+                voterContent.classList.remove('hidden');
+                
+                // Get network information
+                getNetworkInfo();
+                
+                // Load elections
+                loadElections();
+            }
+        }
+        
+        // Get network information
+        async function getNetworkInfo() {
+            try {
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                log("Chain ID: " + chainId);
+                
+                // Determine network name
+                let network = "Unknown Network";
+                
+                switch (chainId) {
+                    case "0x1":
+                        network = "Ethereum Mainnet";
+                        break;
+                    case "0x3":
+                        network = "Ropsten Testnet";
+                        break;
+                    case "0x4":
+                        network = "Rinkeby Testnet";
+                        break;
+                    case "0x5":
+                        network = "Goerli Testnet";
+                        break;
+                    case "0x539":
+                        network = "Ganache Local";
+                        break;
+                    default:
+                        network = "Local Network (" + chainId + ")";
+                }
+                
+                networkName.textContent = network;
+                log("Connected to network: " + network);
+            } catch (error) {
+                log("Error getting network info: " + error.message);
+            }
+        }
+        
+        // Load elections
+        function loadElections() {
+            log("Loading elections...");
+            
+            // In a real application, this would fetch data from the blockchain
+            // For now, we'll just use sample data
+            
+            if (elections.length === 0) {
+                electionsList.innerHTML = '<p>No elections found.</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            elections.forEach(election => {
+                let statusClass = '';
+                let statusText = '';
+                let actionButton = '';
+                
+                switch (election.status) {
+                    case 'active':
+                        statusClass = 'status-active';
+                        statusText = 'Active';
+                        actionButton = `<button onclick="openVoting(${election.id})">Vote Now</button>`;
+                        break;
+                    case 'upcoming':
+                        statusClass = 'status-upcoming';
+                        statusText = 'Upcoming';
+                        actionButton = `<button disabled>Not Started Yet</button>`;
+                        break;
+                    case 'ended':
+                        statusClass = 'status-ended';
+                        statusText = 'Ended';
+                        actionButton = `<button onclick="viewResults(${election.id})">View Results</button>`;
+                        break;
+                }
+                
+                html += `
+                    <div class="election-card">
+                        <h3>${election.name}</h3>
+                        <p><strong>Period:</strong> ${election.startDate} to ${election.endDate}</p>
+                        <p><strong>Status:</strong> <span class="election-status ${statusClass}">${statusText}</span></p>
+                        <p><strong>Candidates:</strong> ${election.candidates.length}</p>
+                        ${actionButton}
+                    </div>
+                `;
+            });
+            
+            electionsList.innerHTML = html;
+        }
+        
+        // Open voting interface
+        function openVoting(electionId) {
+            log("Opening voting interface for election ID: " + electionId);
+            
+            // Find the election
+            const election = elections.find(e => e.id === electionId);
+            if (!election) {
+                alert("Election not found");
+                return;
+            }
+            
+            currentElection = election;
+            
+            // Update UI
+            votingTitle.textContent = election.name;
+            votingPeriod.textContent = `Voting Period: ${election.startDate} to ${election.endDate}`;
+            
+            // Load candidates
+            let html = '';
+            
+            election.candidates.forEach(candidate => {
+                html += `
+                    <div class="candidate-option">
+                        <input type="radio" name="candidate" id="candidate-${candidate.id}" value="${candidate.id}" onchange="selectCandidate(${candidate.id})">
+                        <div class="candidate-info">
+                            <div class="candidate-name">${candidate.name}</div>
+                            <div class="candidate-party">${candidate.party}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            candidateOptions.innerHTML = html;
+            
+            // Reset selected candidate
+            selectedCandidate = null;
+            voteBtn.disabled = true;
+            
+            // Hide other interfaces and show voting interface
+            voterContent.classList.add('hidden');
+            resultsInterface.classList.add('hidden');
+            votingInterface.classList.remove('hidden');
+            votingStatus.classList.add('hidden');
+        }
+        
+        // Select candidate
+        function selectCandidate(candidateId) {
+            log("Selected candidate ID: " + candidateId);
+            selectedCandidate = candidateId;
+            voteBtn.disabled = false;
+        }
+        
+        // Cast vote
+        function castVote() {
+            if (!selectedCandidate) {
+                showVotingStatus('error', 'Please select a candidate.');
+                return;
+            }
+            
+            log("Casting vote for candidate ID: " + selectedCandidate);
+            
+            // Disable vote button
+            voteBtn.disabled = true;
+            voteBtn.textContent = 'Submitting Vote...';
+            
+            // In a real application, this would interact with the blockchain
+            // For now, we'll just simulate a successful vote
+            
+            setTimeout(() => {
+                // Show success message
+                showVotingStatus('success', 'Your vote has been cast successfully!');
+                
+                // Update button
+                voteBtn.textContent = 'Vote Recorded';
+                
+                // Disable all radio buttons
+                const radioButtons = document.querySelectorAll('input[name="candidate"]');
+                radioButtons.forEach(radio => {
+                    radio.disabled = true;
+                });
+            }, 1500);
+        }
+        
+        // Show voting status
+        function showVotingStatus(type, message) {
+            votingStatus.className = 'status-message ' + type;
+            votingStatus.textContent = message;
+            votingStatus.classList.remove('hidden');
+        }
+        
+        // View election results
+        function viewResults(electionId) {
+            log("Viewing results for election ID: " + electionId);
+            
+            // Find the election
+            const election = elections.find(e => e.id === electionId);
+            if (!election) {
+                alert("Election not found");
+                return;
+            }
+            
+            // Update UI
+            resultsTitle.textContent = election.name + " - Results";
+            resultsPeriod.textContent = `Voting Period: ${election.startDate} to ${election.endDate}`;
+            
+            // Calculate total votes
+            const totalVotes = election.candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
+            
+            // Sort candidates by votes (descending)
+            const sortedCandidates = [...election.candidates].sort((a, b) => b.votes - a.votes);
+            
+            // Load results
+            let html = `<p><strong>Total Votes Cast:</strong> ${totalVotes}</p>`;
+            
+            sortedCandidates.forEach(candidate => {
+                const percentage = totalVotes > 0 ? (candidate.votes / totalVotes * 100).toFixed(1) : 0;
+                
+                html += `
+                    <div class="result-bar">
+                        <div class="result-info">
+                            <span class="result-name">${candidate.name} (${candidate.party})</span>
+                            <span class="result-percentage">${percentage}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div style="text-align: right; font-size: 14px; color: #666; margin-top: 5px;">
+                            ${candidate.votes} votes
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsContainer.innerHTML = html;
+            
+            // Hide other interfaces and show results interface
+            voterContent.classList.add('hidden');
+            votingInterface.classList.add('hidden');
+            resultsInterface.classList.remove('hidden');
+        }
+        
+        // Show elections list
+        function showElectionsList() {
+            voterContent.classList.remove('hidden');
+            votingInterface.classList.add('hidden');
+            resultsInterface.classList.add('hidden');
+        }
+        
+        // Initialize the application
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

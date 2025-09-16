@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MUT Voting System - Admin Portal</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../css/admin.css">
+    <link rel="stylesheet" type="text/css" href="../css/admin-fixed.css">
+  </head>
+  <body>
+    <div id="head" class="text-center">
+      <div class="university-header">
+        <div class="university-logo">
+          <div class="logo-placeholder">MUT</div>
+        </div>
+        <div class="university-title">
+          <h1>Murang'a University of Technology</h1>
+          <h2>Decentralized Voting System</h2>
+          <p class="tagline">Secure, Transparent, and Efficient Elections</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container live-tally-container">
+      <legend>Live Election Results</legend>
+      <div class="tally-info">
+        <div class="tally-icon"><i class="fa fa-chart-bar"></i></div>
+        <p class="tally-description">Real-time voting results are displayed here. Results update automatically every 10 seconds for active elections.</p>
+      </div>
+      <div id="liveTallyContainer" class="live-tally">
+        <div id="tallyMessage">No active elections with votes yet</div>
+        <div id="tallyCards" class="tally-container"></div>
+      </div>
+    </div>
+
+    <div class="container election-form">
+     <legend>Create New Election</legend>
+     <form id="electionForm">
+       <div class="form-section">
+         <h3>Election Information</h3>
+         <table class="table text-center">
+           <tr>
+             <th>Election Name</th><td colspan="3"><input id="electionName" type="text" name="electionName" placeholder="e.g., Student Council Elections 2025" required></td>
+           </tr>
+           <tr>
+             <th>Start date</th>
+             <td>
+               <div class="date-input-container">
+                 <div class="date-label">DD/MM/YYYY</div>
+                 <div class="date-inputs">
+                   <input id="startDateDay" type="number" min="1" max="31" placeholder="DD" required style="width: 60px;">
+                   <span class="date-separator">/</span>
+                   <input id="startDateMonth" type="number" min="1" max="12" placeholder="MM" required style="width: 60px;">
+                   <span class="date-separator">/</span>
+                   <input id="startDateYear" type="number" min="2025" max="2030" value="2025" placeholder="YYYY" required style="width: 80px;">
+                 </div>
+                 <div class="time-inputs">
+                   <select id="startDateHour" required>
+                     <option value="">Hour</option>
+                     <option value="0">00</option>
+                     <option value="1">01</option>
+                     <option value="2">02</option>
+                     <option value="3">03</option>
+                     <option value="4">04</option>
+                     <option value="5">05</option>
+                     <option value="6">06</option>
+                     <option value="7">07</option>
+                     <option value="8">08</option>
+                     <option value="9">09</option>
+                     <option value="10">10</option>
+                     <option value="11">11</option>
+                     <option value="12">12</option>
+                     <option value="13">13</option>
+                     <option value="14">14</option>
+                     <option value="15">15</option>
+                     <option value="16">16</option>
+                     <option value="17">17</option>
+                     <option value="18">18</option>
+                     <option value="19">19</option>
+                     <option value="20">20</option>
+                     <option value="21">21</option>
+                     <option value="22">22</option>
+                     <option value="23">23</option>
+                   </select>
+                   <span class="time-separator">:</span>
+                   <select id="startDateMinute" required>
+                     <option value="">Min</option>
+                     <option value="0">00</option>
+                     <option value="15">15</option>
+                     <option value="30">30</option>
+                     <option value="45">45</option>
+                   </select>
+                 </div>
+               </div>
+             </td>
+             <th>End date</th>
+             <td>
+               <div class="date-input-container">
+                 <div class="date-label">DD/MM/YYYY</div>
+                 <div class="date-inputs">
+                   <input id="endDateDay" type="number" min="1" max="31" placeholder="DD" required style="width: 60px;">
+                   <span class="date-separator">/</span>
+                   <input id="endDateMonth" type="number" min="1" max="12" placeholder="MM" required style="width: 60px;">
+                   <span class="date-separator">/</span>
+                   <input id="endDateYear" type="number" min="2025" max="2030" value="2025" placeholder="YYYY" required style="width: 80px;">
+                 </div>
+                 <div class="time-inputs">
+                   <select id="endDateHour" required>
+                     <option value="">Hour</option>
+                     <option value="0">00</option>
+                     <option value="1">01</option>
+                     <option value="2">02</option>
+                     <option value="3">03</option>
+                     <option value="4">04</option>
+                     <option value="5">05</option>
+                     <option value="6">06</option>
+                     <option value="7">07</option>
+                     <option value="8">08</option>
+                     <option value="9">09</option>
+                     <option value="10">10</option>
+                     <option value="11">11</option>
+                     <option value="12">12</option>
+                     <option value="13">13</option>
+                     <option value="14">14</option>
+                     <option value="15">15</option>
+                     <option value="16">16</option>
+                     <option value="17">17</option>
+                     <option value="18">18</option>
+                     <option value="19">19</option>
+                     <option value="20">20</option>
+                     <option value="21">21</option>
+                     <option value="22">22</option>
+                     <option value="23">23</option>
+                   </select>
+                   <span class="time-separator">:</span>
+                   <select id="endDateMinute" required>
+                     <option value="">Min</option>
+                     <option value="0">00</option>
+                     <option value="15">15</option>
+                     <option value="30">30</option>
+                     <option value="45">45</option>
+                   </select>
+                 </div>
+               </div>
+             </td>
+           </tr>
+         </table>
+       </div>
+
+       <div class="form-section">
+         <h3>Candidates Information</h3>
+         <p class="section-description">Add all candidates participating in this election</p>
+
+         <div class="candidates-container">
+           <div class="candidate-entry" id="candidate-1">
+             <table class="table text-center">
+               <tr>
+                 <th>Name </th><td><input id="name-1" type="text" name="name-1" placeholder="Candidate's name" autocomplete="off" required></td>
+                 <th>Party/Position</th><td><input id="party-1" type="text" name="party-1" placeholder="Party or Position" required></td>
+               </tr>
+             </table>
+           </div>
+
+           <div id="additionalCandidates"></div>
+
+           <button type="button" id="addMoreCandidates" class="btn-secondary"><i class="fas fa-plus-circle"></i> Add Another Candidate</button>
+         </div>
+       </div>
+
+       <div class="form-actions">
+         <button type="button" id="createElection" class="btn-primary"><i class="fas fa-check-circle"></i> Create Election</button>
+         <div id="electionStatus" class="status-message"></div>
+       </div>
+     </form>
+    </div>
+
+    <div class="container elections-container">
+     <legend>Election Management</legend>
+     <div class="section-info">
+       <div class="info-icon"><i class="fas fa-vote-yea"></i></div>
+       <p class="info-text">View and manage all elections. Active elections are highlighted in green, upcoming elections in yellow, and completed elections in red.</p>
+     </div>
+     <div id="activeElections" class="elections-list">
+       <div class="loading-indicator">
+         <i class="fas fa-spinner fa-spin"></i>
+         <p>Loading elections...</p>
+       </div>
+     </div>
+     <button type="button" id="refreshElections" class="btn-refresh"><i class="fas fa-sync-alt"></i> Refresh Elections</button>
+    </div>
+
+    <div class="container debug-container">
+     <legend>System Information</legend>
+     <div class="debug-grid">
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-network-wired"></i></div>
+         <div class="debug-label">Network</div>
+         <div id="networkInfo" class="debug-value">Checking...</div>
+       </div>
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-file-contract"></i></div>
+         <div class="debug-label">Contract</div>
+         <div id="contractAddress" class="debug-value">Not connected</div>
+       </div>
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-info-circle"></i></div>
+         <div class="debug-label">Status</div>
+         <div id="debugInfo" class="debug-value">Initializing...</div>
+       </div>
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-users"></i></div>
+         <div class="debug-label">Candidates</div>
+         <div id="candidateCount" class="debug-value">Loading...</div>
+       </div>
+     </div>
+     <div class="footer-note">
+       <p>© 2025 Murang'a University of Technology - Decentralized Voting System</p>
+     </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+
+    <script>
+      // Direct implementation of all functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Admin page loaded');
+
+        // 1. MetaMask Connection
+        const connectButton = document.createElement('button');
+        connectButton.textContent = 'Connect MetaMask';
+        connectButton.className = 'metamask-connect-btn';
+        connectButton.style.position = 'fixed';
+        connectButton.style.top = '10px';
+        connectButton.style.right = '10px';
+        connectButton.style.zIndex = '9999';
+        connectButton.style.padding = '10px 20px';
+        connectButton.style.backgroundColor = '#4CAF50';
+        connectButton.style.color = 'white';
+        connectButton.style.border = 'none';
+        connectButton.style.borderRadius = '5px';
+        connectButton.style.cursor = 'pointer';
+
+        connectButton.onclick = async function() {
+          if (typeof window.ethereum !== 'undefined') {
+            try {
+              const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+              console.log('Connected accounts:', accounts);
+              connectButton.textContent = 'Connected: ' + accounts[0].substring(0, 6) + '...' + accounts[0].substring(38);
+              connectButton.style.backgroundColor = '#2196F3';
+
+              // Update status
+              document.getElementById('debugInfo').textContent = 'Connected to MetaMask';
+              document.getElementById('networkInfo').textContent = 'Local Network';
+            } catch (error) {
+              console.error('Error connecting to MetaMask:', error);
+              alert('Error connecting to MetaMask: ' + error.message);
+            }
+          } else {
+            alert('MetaMask is not installed. Please install MetaMask to use this application.');
+          }
+        };
+
+        document.body.appendChild(connectButton);
+
+        // 2. Add Candidate Button
+        const addCandidateBtn = document.getElementById('addMoreCandidates');
+        if (addCandidateBtn) {
+          addCandidateBtn.onclick = function() {
+            console.log('Add Candidate button clicked');
+
+            // Get the current number of candidates
+            const candidateEntries = document.querySelectorAll('.candidate-entry');
+            const candidateCounter = candidateEntries.length + 1;
+
+            // Create a new candidate row
+            const newCandidateRow = document.createElement('div');
+            newCandidateRow.className = 'candidate-entry';
+            newCandidateRow.id = 'candidate-' + candidateCounter;
+
+            newCandidateRow.innerHTML = `
+              <table class="table text-center">
+                <tr>
+                  <th>Name</th>
+                  <td><input type="text" name="name-${candidateCounter}" id="name-${candidateCounter}" placeholder="Candidate's name" required></td>
+                  <th>Party/Position</th>
+                  <td>
+                    <div style="display: flex; align-items: center;">
+                      <input type="text" name="party-${candidateCounter}" id="party-${candidateCounter}" placeholder="Party or Position" required>
+                      <button type="button" class="remove-candidate" data-id="${candidateCounter}" style="margin-left: 10px;">✕</button>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            `;
+
+            // Add the new row to the container
+            const container = document.getElementById('additionalCandidates');
+            if (container) {
+              container.appendChild(newCandidateRow);
+
+              // Add event listener to the remove button
+              const removeBtn = newCandidateRow.querySelector('.remove-candidate');
+              if (removeBtn) {
+                removeBtn.onclick = function() {
+                  const id = this.getAttribute('data-id');
+                  const element = document.getElementById('candidate-' + id);
+                  if (element) {
+                    element.remove();
+                  }
+                };
+              }
+            }
+          };
+        }
+
+        // 3. Create Election Button
+        const createElectionBtn = document.getElementById('createElection');
+        if (createElectionBtn) {
+          createElectionBtn.onclick = function() {
+            console.log('Create Election button clicked');
+
+            // Get form values
+            const electionName = document.getElementById('electionName').value;
+
+            // Get date values in DD/MM/YYYY format
+            const startDay = document.getElementById('startDateDay').value;
+            const startMonth = document.getElementById('startDateMonth').value;
+            const startYear = document.getElementById('startDateYear').value;
+            const startHour = document.getElementById('startDateHour').value;
+            const startMinute = document.getElementById('startDateMinute').value;
+
+            const endDay = document.getElementById('endDateDay').value;
+            const endMonth = document.getElementById('endDateMonth').value;
+            const endYear = document.getElementById('endDateYear').value;
+            const endHour = document.getElementById('endDateHour').value;
+            const endMinute = document.getElementById('endDateMinute').value;
+
+            // Format dates
+            const startDateFormatted = `${startDay}/${startMonth}/${startYear} ${startHour}:${startMinute}`;
+            const endDateFormatted = `${endDay}/${endMonth}/${startYear} ${endHour}:${endMinute}`;
+
+            // Get all candidates
+            const candidates = [];
+            const candidateEntries = document.querySelectorAll('.candidate-entry');
+
+            candidateEntries.forEach(function(entry) {
+              const nameInput = entry.querySelector('input[id^="name-"]');
+              const partyInput = entry.querySelector('input[id^="party-"]');
+
+              if (nameInput && partyInput && nameInput.value && partyInput.value) {
+                candidates.push({
+                  name: nameInput.value,
+                  party: partyInput.value
+                });
+              }
+            });
+
+            // Validate form
+            if (!electionName) {
+              alert('Please enter an election name');
+              return;
+            }
+
+            if (!startDay || !startMonth || !startYear || !startHour || !startMinute) {
+              alert('Please enter a complete start date and time');
+              return;
+            }
+
+            if (!endDay || !endMonth || !endYear || !endHour || !endMinute) {
+              alert('Please enter a complete end date and time');
+              return;
+            }
+
+            if (candidates.length === 0) {
+              alert('Please add at least one candidate');
+              return;
+            }
+
+            // Show success message
+            const statusElement = document.getElementById('electionStatus');
+            statusElement.innerHTML = `<span style="color: green;">Election "${electionName}" created successfully!</span>`;
+            statusElement.innerHTML += `<br><span>Start Date: ${startDateFormatted}</span>`;
+            statusElement.innerHTML += `<br><span>End Date: ${endDateFormatted}</span>`;
+            statusElement.innerHTML += `<br><span>Candidates: ${candidates.length}</span>`;
+
+            // Reset form after 3 seconds
+            setTimeout(function() {
+              document.getElementById('electionForm').reset();
+              document.getElementById('additionalCandidates').innerHTML = '';
+              statusElement.innerHTML = '';
+
+              // Refresh elections list
+              loadElections();
+            }, 3000);
+          };
+        }
+
+        // 4. Load Elections
+        function loadElections() {
+          console.log('Loading elections...');
+
+          const activeElectionsDiv = document.getElementById('activeElections');
+          if (activeElectionsDiv) {
+            activeElectionsDiv.innerHTML = `
+              <div class="loading-indicator">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading elections...</p>
+              </div>
+            `;
+
+            // Simulate loading
+            setTimeout(function() {
+              activeElectionsDiv.innerHTML = `
+                <div class="election-info">
+                  <h3>Sample Election 2025</h3>
+                  <p>This is a sample election for demonstration purposes.</p>
+                  <p>Start Date: 01/05/2025 10:00</p>
+                  <p>End Date: 10/05/2025 18:00</p>
+                  <p>Status: <span class="status-upcoming">Upcoming</span></p>
+                  <p>Candidates: 2</p>
+                  <button class="btn-view">View Details</button>
+                </div>
+              `;
+
+              // Add event listener to the view button
+              const viewBtn = activeElectionsDiv.querySelector('.btn-view');
+              if (viewBtn) {
+                viewBtn.onclick = function() {
+                  activeElectionsDiv.innerHTML = `
+                    <div class="election-details">
+                      <h3>Sample Election 2025</h3>
+                      <p>Start Date: 01/05/2025 10:00</p>
+                      <p>End Date: 10/05/2025 18:00</p>
+                      <p>Status: <span class="status-upcoming">Upcoming</span></p>
+
+                      <h4>Candidates:</h4>
+                      <ul>
+                        <li>John Doe - Democratic Party</li>
+                        <li>Jane Smith - Republican Party</li>
+                      </ul>
+
+                      <button class="btn-secondary" id="backToElections">Back to Elections</button>
+                    </div>
+                  `;
+
+                  // Add event listener to the back button
+                  const backBtn = document.getElementById('backToElections');
+                  if (backBtn) {
+                    backBtn.onclick = loadElections;
+                  }
+                };
+              }
+            }, 1500);
+          }
+        }
+
+        // Initialize the refresh elections button
+        const refreshElectionsBtn = document.getElementById('refreshElections');
+        if (refreshElectionsBtn) {
+          refreshElectionsBtn.onclick = loadElections;
+        }
+
+        // Load elections initially
+        loadElections();
+
+        // Set default values for date inputs
+        document.getElementById('startDateDay').value = '1';
+        document.getElementById('startDateMonth').value = '5';
+        document.getElementById('startDateYear').value = '2025';
+        document.getElementById('startDateHour').value = '10';
+        document.getElementById('startDateMinute').value = '0';
+
+        document.getElementById('endDateDay').value = '10';
+        document.getElementById('endDateMonth').value = '5';
+        document.getElementById('endDateYear').value = '2025';
+        document.getElementById('endDateHour').value = '18';
+        document.getElementById('endDateMinute').value = '0';
+      });
+    </script>
+  </body>
+</html>

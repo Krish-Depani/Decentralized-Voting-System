@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Connection Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: #006400;
+            color: white;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 90%;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 40px 0;
+        }
+        
+        h2 {
+            color: #006400;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .status-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .status-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status-label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #555;
+        }
+        
+        .status-value {
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
+        .connect-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px 0;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .connect-button:hover {
+            background-color: #45a049;
+        }
+        
+        .info-box {
+            background-color: #e7f3fe;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .warning-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .success-box {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+            display: none;
+        }
+        
+        .error-box {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+            display: none;
+        }
+        
+        .footer {
+            margin-top: auto;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Murang'a University of Technology - MetaMask Connection Test</h1>
+    </div>
+    
+    <div class="container">
+        <h2>MetaMask Connection Status</h2>
+        
+        <div class="info-box">
+            <p><strong>Instructions:</strong> This page tests your MetaMask connection. Click the "Connect MetaMask" button below or use the floating button at the top right of the page.</p>
+        </div>
+        
+        <div class="warning-box">
+            <p><strong>Note:</strong> Make sure you have MetaMask installed and set up with the correct network (Ganache local network or a test network).</p>
+        </div>
+        
+        <button id="connectMetaMask" class="connect-button">Connect MetaMask</button>
+        
+        <div class="status-box">
+            <div class="status-item">
+                <span class="status-label">MetaMask Installed:</span>
+                <span id="metamask-installed" class="status-value">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Connection Status:</span>
+                <span id="metamask-status" class="status-value">Not connected</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Network:</span>
+                <span id="network-info" class="status-value">Unknown</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Chain ID:</span>
+                <span id="chain-id" class="status-value">Unknown</span>
+            </div>
+        </div>
+        
+        <div id="success-message" class="success-box">
+            <p><strong>Success!</strong> Your MetaMask is properly connected. You can now use the voting application.</p>
+        </div>
+        
+        <div id="error-message" class="error-box">
+            <p><strong>Error!</strong> <span id="error-details">There was a problem connecting to MetaMask.</span></p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        &copy; 2025 Murang'a University of Technology - Decentralized Voting System
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if MetaMask is installed
+            const metamaskInstalledElement = document.getElementById('metamask-installed');
+            const connectButton = document.getElementById('connectMetaMask');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            const errorDetails = document.getElementById('error-details');
+            
+            if (typeof window.ethereum !== 'undefined') {
+                metamaskInstalledElement.textContent = 'Yes';
+                metamaskInstalledElement.style.color = '#4CAF50';
+                
+                // Add connect button functionality
+                connectButton.addEventListener('click', connectMetaMask);
+                
+                // Try to get accounts without prompting
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        updateConnectionStatus(accounts[0]);
+                    }
+                } catch (error) {
+                    console.error('Error checking MetaMask accounts:', error);
+                }
+                
+                // Listen for account changes
+                window.ethereum.on('accountsChanged', function(accounts) {
+                    if (accounts.length > 0) {
+                        updateConnectionStatus(accounts[0]);
+                    } else {
+                        document.getElementById('metamask-status').textContent = 'Disconnected';
+                        document.getElementById('metamask-status').style.color = '#f44336';
+                        successMessage.style.display = 'none';
+                    }
+                });
+                
+                // Listen for chain changes
+                window.ethereum.on('chainChanged', async function(chainId) {
+                    document.getElementById('chain-id').textContent = chainId;
+                    updateNetworkInfo(chainId);
+                });
+            } else {
+                metamaskInstalledElement.textContent = 'No - Please install MetaMask';
+                metamaskInstalledElement.style.color = '#f44336';
+                connectButton.disabled = true;
+                connectButton.textContent = 'MetaMask Not Installed';
+                connectButton.style.backgroundColor = '#ccc';
+                connectButton.style.cursor = 'not-allowed';
+                
+                errorMessage.style.display = 'block';
+                errorDetails.textContent = 'MetaMask is not installed. Please install the MetaMask extension and refresh this page.';
+            }
+            
+            async function connectMetaMask() {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    if (accounts.length > 0) {
+                        updateConnectionStatus(accounts[0]);
+                        successMessage.style.display = 'block';
+                        errorMessage.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error connecting to MetaMask:', error);
+                    errorMessage.style.display = 'block';
+                    errorDetails.textContent = error.message;
+                    successMessage.style.display = 'none';
+                }
+            }
+            
+            async function updateConnectionStatus(account) {
+                const statusElement = document.getElementById('metamask-status');
+                statusElement.textContent = account;
+                statusElement.style.color = '#4CAF50';
+                
+                // Get chain ID
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                document.getElementById('chain-id').textContent = chainId;
+                
+                // Update network info
+                updateNetworkInfo(chainId);
+            }
+            
+            function updateNetworkInfo(chainId) {
+                let networkName = 'Unknown Network';
+                
+                switch (chainId) {
+                    case '0x1':
+                        networkName = 'Ethereum Mainnet';
+                        break;
+                    case '0x3':
+                        networkName = 'Ropsten Testnet';
+                        break;
+                    case '0x4':
+                        networkName = 'Rinkeby Testnet';
+                        break;
+                    case '0x5':
+                        networkName = 'Goerli Testnet';
+                        break;
+                    case '0x539':
+                        networkName = 'Ganache Local';
+                        break;
+                    default:
+                        networkName = 'Local Network (' + chainId + ')';
+                }
+                
+                document.getElementById('network-info').textContent = networkName;
+            }
+        });
+    </script>
+    
+    <!-- Include the direct MetaMask connector script -->
+    <script src="../js/direct-metamask.js"></script>
+</body>
+</html>

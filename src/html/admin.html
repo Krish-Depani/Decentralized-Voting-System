@@ -5,42 +5,279 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin portal</title>
+    <title>MUT Voting System - Admin Portal</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../css/admin.css">
-    
+
   </head>
   <body>
     <div id="head" class="text-center">
-      <h1 align="center" style="color: azure;">Decentralized Voting Using Ethereum Blockchain</h1>
-      <br/> 
+      <div class="university-header">
+        <div class="university-logo">
+          <div class="logo-placeholder">MUT</div>
+        </div>
+        <div class="university-title">
+          <h1>Murang'a University of Technology</h1>
+          <h2>Decentralized Voting System</h2>
+          <p class="tagline">Secure, Transparent, and Efficient Elections</p>
+        </div>
+      </div>
+      <div class="account-switcher">
+        <div id="accountAddress" style="color: white; margin-bottom: 10px;">Your Account: Not connected</div>
+        <button type="button" id="switchAccountBtn" class="btn-switch" onclick="window.ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: {} }] })"><i class="fas fa-exchange-alt"></i> Switch Account</button>
+        <button type="button" id="refreshPageBtn" class="btn-refresh" onclick="window.location.reload()"><i class="fas fa-sync-alt"></i> Refresh Page</button>
+      </div>
     </div>
 
-    <div class="container">
-     <legend>Add Candidate</legend>  
-     <table  class="table text-center"> 
-              <tr>
-                <th>Name </th><td>  <input id="name" type="text" name="name" placeholder ="Candidates name" autocomplete="off"></td>  
-                <th>Party</th><td><input id="party" type="text" name="party" placeholder ="Candidates party"></td> 
-              </tr>
-      </table> 
-      <input id="addCandidate" type="submit" name="submit" value="Add Candidate">
-      <p id="Aday"></p>
+    <div class="container live-tally-container">
+      <legend>Live Election Results</legend>
+      <div class="tally-info">
+        <div class="tally-icon"><i class="fa fa-chart-bar"></i></div>
+        <p class="tally-description">Real-time voting results are displayed here. Results update automatically every 10 seconds for active elections.</p>
+      </div>
+      <div id="liveTallyContainer" class="live-tally">
+        <div id="tallyMessage">No active elections with votes yet</div>
+        <div id="tallyCards" class="tally-container"></div>
+      </div>
     </div>
 
-    <div class="container">
-     <legend>Define Voting Dates</legend>  
-     <table  class="table text-center"> 
-              <tr>              
-                <th>Start date</th><td><input id="startDate" type="date" name=""></td>
-                <th>End date</th><td>    <input id="endDate" type="date" name="" ></td>
-              </tr>
-      </table> 
-      <input id="addDate" type="submit" name="submit" value="Define Dates">
-      <p id="Aday"></p>
+
+
+    <div class="container election-form">
+     <legend>Create New Election</legend>
+     <form id="electionForm">
+       <div class="form-section">
+         <h3>Election Information</h3>
+         <table class="table text-center">
+           <tr>
+             <th>Election Name</th><td colspan="3"><input id="electionName" type="text" name="electionName" placeholder="e.g., Student Council Elections 2025" required></td>
+           </tr>
+           <tr>
+             <th>Start date</th>
+             <td>
+               <div class="date-input-container">
+                 <div class="date-label">DD/MM/YYYY HH:MM</div>
+                 <input id="startDate" type="datetime-local" name="startDate" required>
+               </div>
+             </td>
+             <th>End date</th>
+             <td>
+               <div class="date-input-container">
+                 <div class="date-label">DD/MM/YYYY HH:MM</div>
+                 <input id="endDate" type="datetime-local" name="endDate" required>
+               </div>
+             </td>
+           </tr>
+         </table>
+       </div>
+
+       <div class="form-section">
+         <h3>Candidates Information</h3>
+         <p class="section-description">Add all candidates participating in this election</p>
+
+         <div class="candidates-container">
+           <div class="candidate-entry">
+             <table class="table text-center">
+               <tr>
+                 <th>Name </th><td><input id="name-1" type="text" name="name-1" placeholder="Candidate's name" autocomplete="off" required></td>
+                 <th>Party/Position</th><td><input id="party-1" type="text" name="party-1" placeholder="Party or Position" required></td>
+               </tr>
+             </table>
+           </div>
+
+           <div id="additionalCandidates"></div>
+
+           <button type="button" id="addMoreCandidates" class="btn-secondary" onclick="addCandidate()"><i class="fas fa-plus-circle"></i> Add Another Candidate</button>
+         </div>
+       </div>
+
+
+
+       <div class="form-actions">
+         <button type="button" id="createElection" class="btn-primary" onclick="submitElectionForm()"><i class="fas fa-check-circle"></i> Create Election</button>
+         <div id="electionStatus" class="status-message"></div>
+       </div>
+     </form>
+    </div>
+
+    <div class="container elections-container">
+     <legend>Election Management</legend>
+     <div class="section-info">
+       <div class="info-icon"><i class="fas fa-vote-yea"></i></div>
+       <p class="info-text">View and manage all elections. Active elections are highlighted in green, upcoming elections in yellow, and completed elections in red.</p>
+     </div>
+     <div id="activeElections" class="elections-list">
+       <div class="loading-indicator">
+         <i class="fas fa-spinner fa-spin"></i>
+         <p>Loading elections...</p>
+       </div>
+     </div>
+     <button type="button" id="refreshElections" class="btn-refresh" onclick="loadElections()"><i class="fas fa-sync-alt"></i> Refresh Elections</button>
+    </div>
+
+    <div class="container debug-container">
+     <legend>System Information</legend>
+     <div class="debug-grid">
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-network-wired"></i></div>
+         <div class="debug-label">Network</div>
+         <div id="networkInfo" class="debug-value">Checking...</div>
+       </div>
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-file-contract"></i></div>
+         <div class="debug-label">Contract</div>
+         <div id="contractAddress" class="debug-value">Not connected</div>
+       </div>
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-info-circle"></i></div>
+         <div class="debug-label">Status</div>
+         <div id="debugInfo" class="debug-value">Initializing...</div>
+       </div>
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-users"></i></div>
+         <div class="debug-label">Candidates</div>
+         <div id="candidateCount" class="debug-value">Loading...</div>
+       </div>
+     </div>
+     <div class="footer-note">
+       <p>© 2023 Murang'a University of Technology - Decentralized Voting System</p>
+     </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-  <script src="../dist/app.bundle.js" type="module"></script>
+    <script src="../js/simple-metamask.js"></script>
+    <script src="../js/simple-fixes.js"></script>
+    <script src="../dist/admin.bundle.js"></script>
+
+    <!-- Direct script to fix buttons -->
+    <script>
+      // Fix for Add Candidate button
+      function addCandidate() {
+        console.log('Adding candidate...');
+        let candidateCounter = document.querySelectorAll('.candidate-entry').length;
+        candidateCounter++;
+
+        const newCandidateRow = `
+          <div class="candidate-entry" id="candidate-${candidateCounter}">
+            <table class="table text-center">
+              <tr>
+                <th>Name</th>
+                <td><input type="text" name="name-${candidateCounter}" id="name-${candidateCounter}" placeholder="Candidate's name" required></td>
+                <th>Party/Position</th>
+                <td>
+                  <div style="display: flex; align-items: center;">
+                    <input type="text" name="party-${candidateCounter}" id="party-${candidateCounter}" placeholder="Party or Position" required>
+                    <button type="button" class="remove-candidate" onclick="removeCandidate(${candidateCounter})" style="margin-left: 10px;">✕</button>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        `;
+
+        document.getElementById('additionalCandidates').innerHTML += newCandidateRow;
+      }
+
+      // Fix for Remove Candidate button
+      function removeCandidate(id) {
+        console.log('Removing candidate:', id);
+        const element = document.getElementById(`candidate-${id}`);
+        if (element) {
+          element.remove();
+        }
+      }
+
+      // Fix for Create Election button
+      function submitElectionForm() {
+        console.log('Submitting election form...');
+        const electionName = document.getElementById('electionName').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (!electionName || !startDate || !endDate) {
+          alert('Please fill in all required fields');
+          return;
+        }
+
+        // Get all candidates
+        const candidates = [];
+        const candidateEntries = document.querySelectorAll('.candidate-entry');
+
+        candidateEntries.forEach((entry, index) => {
+          const nameInput = entry.querySelector(`input[id^="name-"]`);
+          const partyInput = entry.querySelector(`input[id^="party-"]`);
+
+          if (nameInput && partyInput && nameInput.value && partyInput.value) {
+            candidates.push({
+              name: nameInput.value,
+              party: partyInput.value
+            });
+          }
+        });
+
+        if (candidates.length < 1) {
+          alert('Please add at least one candidate');
+          return;
+        }
+
+        alert(`Creating election "${electionName}" with ${candidates.length} candidates.\n\nPlease confirm the transaction in MetaMask when prompted.`);
+
+        // The actual submission will be handled by the admin.js file
+        // This is just to provide immediate feedback
+      }
+
+      // Function to load elections
+      async function loadElections() {
+        console.log('Loading elections...');
+        const activeElectionsDiv = document.getElementById('activeElections');
+        activeElectionsDiv.innerHTML = `
+          <div class="loading-indicator">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading elections...</p>
+          </div>
+        `;
+
+        try {
+          // Simple placeholder for now - in production this would connect to the blockchain
+          setTimeout(() => {
+            activeElectionsDiv.innerHTML = `
+              <div class="election-info">
+                <h3>No active elections found</h3>
+                <p>Create a new election using the form above.</p>
+              </div>
+            `;
+          }, 2000);
+        } catch (error) {
+          console.error('Error loading elections:', error);
+          activeElectionsDiv.innerHTML = `
+            <div class="error-message">
+              <i class="fas fa-exclamation-triangle"></i>
+              <p>Error loading elections: ${error.message}</p>
+            </div>
+          `;
+        }
+      }
+
+      // Initialize when the document is loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Admin page loaded, initializing direct handlers...');
+
+        // Add direct onclick handlers to buttons
+        const addCandidateBtn = document.getElementById('addMoreCandidates');
+        if (addCandidateBtn) {
+          addCandidateBtn.onclick = addCandidate;
+        }
+
+        const createElectionBtn = document.getElementById('createElection');
+        if (createElectionBtn) {
+          createElectionBtn.onclick = submitElectionForm;
+        }
+
+        // Load elections initially
+        loadElections();
+      });
+    </script>
   </body>
 </html>

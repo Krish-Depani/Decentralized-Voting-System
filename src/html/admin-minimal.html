@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Admin Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #006400;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .date-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .date-inputs input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .date-inputs span {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        #status {
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            color: #3c763d;
+        }
+        
+        .error {
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            color: #a94442;
+        }
+        
+        .candidate {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minimal Admin Portal</h1>
+    
+    <button id="connectBtn">Connect to MetaMask</button>
+    <div id="accountInfo"></div>
+    
+    <hr>
+    
+    <h2>Create Election</h2>
+    
+    <form id="electionForm">
+        <div class="form-group">
+            <label for="electionName">Election Name:</label>
+            <input type="text" id="electionName" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Start Date (DD/MM/YYYY):</label>
+            <div class="date-inputs">
+                <input type="number" id="startDay" min="1" max="31" value="1" required>
+                <span>/</span>
+                <input type="number" id="startMonth" min="1" max="12" value="5" required>
+                <span>/</span>
+                <input type="number" id="startYear" min="2025" max="2030" value="2025" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>End Date (DD/MM/YYYY):</label>
+            <div class="date-inputs">
+                <input type="number" id="endDay" min="1" max="31" value="10" required>
+                <span>/</span>
+                <input type="number" id="endMonth" min="1" max="12" value="5" required>
+                <span>/</span>
+                <input type="number" id="endYear" min="2025" max="2030" value="2025" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Candidates:</label>
+            <div id="candidatesContainer">
+                <div class="candidate">
+                    <label>Candidate 1:</label>
+                    <input type="text" id="candidate1" placeholder="Candidate Name" required>
+                </div>
+                <div class="candidate">
+                    <label>Candidate 2:</label>
+                    <input type="text" id="candidate2" placeholder="Candidate Name" required>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" id="addCandidateBtn">Add Candidate</button>
+        <button type="submit">Create Election</button>
+    </form>
+    
+    <div id="status"></div>
+    
+    <script>
+        // Connect to MetaMask
+        document.getElementById('connectBtn').addEventListener('click', async function() {
+            const accountInfoDiv = document.getElementById('accountInfo');
+            
+            try {
+                // Check if MetaMask is installed
+                if (typeof window.ethereum === 'undefined') {
+                    alert('MetaMask is not installed. Please install MetaMask to continue.');
+                    return;
+                }
+                
+                // Request account access
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
+                if (accounts.length > 0) {
+                    // Success
+                    accountInfoDiv.innerHTML = `<p><strong>Connected Account:</strong> ${accounts[0]}</p>`;
+                } else {
+                    alert('No accounts found. Please unlock MetaMask.');
+                }
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
+                alert('Error connecting to MetaMask: ' + error.message);
+            }
+        });
+        
+        // Add candidate
+        let candidateCount = 2;
+        document.getElementById('addCandidateBtn').addEventListener('click', function() {
+            candidateCount++;
+            
+            const candidateDiv = document.createElement('div');
+            candidateDiv.className = 'candidate';
+            candidateDiv.innerHTML = `
+                <label>Candidate ${candidateCount}:</label>
+                <input type="text" id="candidate${candidateCount}" placeholder="Candidate Name" required>
+            `;
+            
+            document.getElementById('candidatesContainer').appendChild(candidateDiv);
+        });
+        
+        // Form submission
+        document.getElementById('electionForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const statusDiv = document.getElementById('status');
+            
+            // Get form values
+            const electionName = document.getElementById('electionName').value;
+            const startDay = document.getElementById('startDay').value;
+            const startMonth = document.getElementById('startMonth').value;
+            const startYear = document.getElementById('startYear').value;
+            const endDay = document.getElementById('endDay').value;
+            const endMonth = document.getElementById('endMonth').value;
+            const endYear = document.getElementById('endYear').value;
+            
+            // Format dates
+            const startDate = `${startDay}/${startMonth}/${startYear}`;
+            const endDate = `${endDay}/${endMonth}/${endYear}`;
+            
+            // Get candidates
+            const candidates = [];
+            for (let i = 1; i <= candidateCount; i++) {
+                const candidateName = document.getElementById(`candidate${i}`).value;
+                if (candidateName) {
+                    candidates.push(candidateName);
+                }
+            }
+            
+            // Validate form
+            if (!electionName) {
+                statusDiv.className = 'error';
+                statusDiv.textContent = 'Please enter an election name.';
+                return;
+            }
+            
+            if (candidates.length < 2) {
+                statusDiv.className = 'error';
+                statusDiv.textContent = 'Please add at least two candidates.';
+                return;
+            }
+            
+            // Show success message
+            statusDiv.className = 'success';
+            statusDiv.innerHTML = `
+                <h3>Election Created Successfully!</h3>
+                <p><strong>Name:</strong> ${electionName}</p>
+                <p><strong>Period:</strong> ${startDate} to ${endDate}</p>
+                <p><strong>Candidates:</strong></p>
+                <ul>
+                    ${candidates.map(name => `<li>${name}</li>`).join('')}
+                </ul>
+            `;
+        });
+    </script>
+</body>
+</html>

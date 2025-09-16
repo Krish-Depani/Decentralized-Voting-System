@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MUT Voting System - Admin Portal</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../css/admin.css">
+  </head>
+  <body>
+    <div id="head" class="text-center">
+      <div class="university-header">
+        <div class="university-logo">
+          <div class="logo-placeholder">MUT</div>
+        </div>
+        <div class="university-title">
+          <h1>Murang'a University of Technology</h1>
+          <h2>Decentralized Voting System</h2>
+          <p class="tagline">Secure, Transparent, and Efficient Elections</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="container live-tally-container">
+      <legend>Live Election Results</legend>
+      <div class="tally-info">
+        <div class="tally-icon"><i class="fa fa-chart-bar"></i></div>
+        <p class="tally-description">Real-time voting results are displayed here. Results update automatically every 10 seconds for active elections.</p>
+      </div>
+      <div id="liveTallyContainer" class="live-tally">
+        <div id="tallyMessage">No active elections with votes yet</div>
+        <div id="tallyCards" class="tally-container"></div>
+      </div>
+    </div>
+    
+    <div class="container election-form">
+     <legend>Create New Election</legend>
+     <form id="electionForm">
+       <div class="form-section">
+         <h3>Election Information</h3>
+         <table class="table text-center"> 
+           <tr>              
+             <th>Election Name</th><td colspan="3"><input id="electionName" type="text" name="electionName" placeholder="e.g., Student Council Elections 2025" required></td>
+           </tr>
+           <tr>              
+             <th>Start date</th>
+             <td>
+               <div class="date-input-container">
+                 <div class="date-label">DD/MM/YYYY</div>
+                 <div class="date-inputs">
+                   <input id="startDay" type="number" min="1" max="31" placeholder="DD" value="1" required style="width: 60px;">
+                   <span class="date-separator">/</span>
+                   <input id="startMonth" type="number" min="1" max="12" placeholder="MM" value="5" required style="width: 60px;">
+                   <span class="date-separator">/</span>
+                   <input id="startYear" type="number" min="2025" max="2030" value="2025" placeholder="YYYY" required style="width: 80px;">
+                 </div>
+               </div>
+             </td>
+             <th>End date</th>
+             <td>
+               <div class="date-input-container">
+                 <div class="date-label">DD/MM/YYYY</div>
+                 <div class="date-inputs">
+                   <input id="endDay" type="number" min="1" max="31" placeholder="DD" value="10" required style="width: 60px;">
+                   <span class="date-separator">/</span>
+                   <input id="endMonth" type="number" min="1" max="12" placeholder="MM" value="5" required style="width: 60px;">
+                   <span class="date-separator">/</span>
+                   <input id="endYear" type="number" min="2025" max="2030" value="2025" placeholder="YYYY" required style="width: 80px;">
+                 </div>
+               </div>
+             </td>
+           </tr>
+         </table>
+       </div>
+       
+       <div class="form-section">
+         <h3>Candidates Information</h3>
+         <p class="section-description">Add all candidates participating in this election</p>
+         
+         <div class="candidates-container">
+           <div class="candidate-entry" id="candidate-1">
+             <table class="table text-center"> 
+               <tr>
+                 <th>Name </th><td><input id="name-1" type="text" name="name-1" placeholder="Candidate's name" autocomplete="off" required></td>  
+                 <th>Party/Position</th><td><input id="party-1" type="text" name="party-1" placeholder="Party or Position" required></td> 
+               </tr>
+             </table>
+           </div>
+           
+           <div id="additionalCandidates"></div>
+           
+           <button type="button" id="addMoreCandidates" class="btn-secondary"><i class="fas fa-plus-circle"></i> Add Another Candidate</button>
+         </div>
+       </div>
+       
+       <div class="form-actions">
+         <button type="button" id="createElection" class="btn-primary"><i class="fas fa-check-circle"></i> Create Election</button>
+         <div id="electionStatus" class="status-message"></div>
+       </div>
+     </form>
+    </div>
+    
+    <div class="container elections-container">
+     <legend>Election Management</legend>
+     <div class="section-info">
+       <div class="info-icon"><i class="fas fa-vote-yea"></i></div>
+       <p class="info-text">View and manage all elections. Active elections are highlighted in green, upcoming elections in yellow, and completed elections in red.</p>
+     </div>
+     <div id="activeElections" class="elections-list">
+       <div class="loading-indicator">
+         <i class="fas fa-spinner fa-spin"></i>
+         <p>Loading elections...</p>
+       </div>
+     </div>
+     <button type="button" id="refreshElections" class="btn-refresh"><i class="fas fa-sync-alt"></i> Refresh Elections</button>
+    </div>
+
+    <div class="container debug-container">
+     <legend>System Information</legend>
+     <div class="debug-grid">
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-network-wired"></i></div>
+         <div class="debug-label">Network</div>
+         <div id="networkInfo" class="debug-value">Checking...</div>
+       </div>
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-file-contract"></i></div>
+         <div class="debug-label">Contract</div>
+         <div id="contractAddress" class="debug-value">Not connected</div>
+       </div>
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-info-circle"></i></div>
+         <div class="debug-label">Status</div>
+         <div id="debugInfo" class="debug-value">Initializing...</div>
+       </div>
+       <div class="debug-item">
+         <div class="debug-icon"><i class="fas fa-users"></i></div>
+         <div class="debug-label">Candidates</div>
+         <div id="candidateCount" class="debug-value">Loading...</div>
+       </div>
+     </div>
+     <div class="footer-note">
+       <p>© 2025 Murang'a University of Technology - Decentralized Voting System</p>
+     </div>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="../js/simple-metamask.js"></script>
+    <script src="../js/simple-fixes.js"></script>
+    
+    <style>
+      /* Additional styles for date inputs */
+      .date-input-container {
+        margin-bottom: 10px;
+      }
+      .date-label {
+        font-size: 12px;
+        color: #FFD700;
+        margin-bottom: 5px;
+        text-align: left;
+      }
+      .date-inputs {
+        display: flex;
+        align-items: center;
+      }
+      .date-separator {
+        margin: 0 5px;
+        color: white;
+        font-weight: bold;
+      }
+      input[type="number"] {
+        padding: 8px;
+        border: 1px solid #4CAF50;
+        border-radius: 4px;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #333;
+        text-align: center;
+      }
+    </style>
+    
+    <script>
+      // Simple direct implementation
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Simple admin page loaded');
+        
+        // Add Candidate Button
+        const addCandidateBtn = document.getElementById('addMoreCandidates');
+        if (addCandidateBtn) {
+          addCandidateBtn.addEventListener('click', function() {
+            console.log('Add Candidate button clicked');
+            
+            // Create a new candidate row
+            const candidateEntries = document.querySelectorAll('.candidate-entry');
+            const newIndex = candidateEntries.length + 1;
+            
+            const newRow = document.createElement('div');
+            newRow.className = 'candidate-entry';
+            newRow.id = 'candidate-' + newIndex;
+            
+            newRow.innerHTML = `
+              <table class="table text-center">
+                <tr>
+                  <th>Name</th>
+                  <td><input type="text" id="name-${newIndex}" name="name-${newIndex}" placeholder="Candidate's name" required></td>
+                  <th>Party/Position</th>
+                  <td>
+                    <div style="display: flex; align-items: center;">
+                      <input type="text" id="party-${newIndex}" name="party-${newIndex}" placeholder="Party or Position" required>
+                      <button type="button" class="remove-btn" style="margin-left: 10px; background-color: #f44336; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">✕</button>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            `;
+            
+            // Add to container
+            document.getElementById('additionalCandidates').appendChild(newRow);
+            
+            // Add remove button handler
+            const removeBtn = newRow.querySelector('.remove-btn');
+            removeBtn.addEventListener('click', function() {
+              newRow.remove();
+            });
+          });
+        }
+        
+        // Create Election Button
+        const createElectionBtn = document.getElementById('createElection');
+        if (createElectionBtn) {
+          createElectionBtn.addEventListener('click', function() {
+            console.log('Create Election button clicked');
+            
+            // Get form values
+            const electionName = document.getElementById('electionName').value;
+            
+            // Get date values
+            const startDay = document.getElementById('startDay').value;
+            const startMonth = document.getElementById('startMonth').value;
+            const startYear = document.getElementById('startYear').value;
+            
+            const endDay = document.getElementById('endDay').value;
+            const endMonth = document.getElementById('endMonth').value;
+            const endYear = document.getElementById('endYear').value;
+            
+            // Format dates
+            const startDate = `${startDay}/${startMonth}/${startYear}`;
+            const endDate = `${endDay}/${endMonth}/${endYear}`;
+            
+            // Get candidates
+            const candidates = [];
+            const candidateEntries = document.querySelectorAll('.candidate-entry');
+            
+            candidateEntries.forEach(function(entry) {
+              const nameInput = entry.querySelector('input[id^="name-"]');
+              const partyInput = entry.querySelector('input[id^="party-"]');
+              
+              if (nameInput && partyInput && nameInput.value && partyInput.value) {
+                candidates.push({
+                  name: nameInput.value,
+                  party: partyInput.value
+                });
+              }
+            });
+            
+            // Validate form
+            if (!electionName) {
+              alert('Please enter an election name');
+              return;
+            }
+            
+            if (candidates.length === 0) {
+              alert('Please add at least one candidate');
+              return;
+            }
+            
+            // Show success message
+            const statusElement = document.getElementById('electionStatus');
+            statusElement.innerHTML = `
+              <div style="background-color: rgba(76, 175, 80, 0.2); border: 1px solid #4CAF50; padding: 15px; border-radius: 5px; margin-top: 15px;">
+                <h4 style="color: #4CAF50; margin-top: 0;">Election Created Successfully!</h4>
+                <p><strong>Name:</strong> ${electionName}</p>
+                <p><strong>Period:</strong> ${startDate} - ${endDate}</p>
+                <p><strong>Candidates:</strong> ${candidates.length}</p>
+                <ul style="text-align: left; padding-left: 20px;">
+                  ${candidates.map(c => `<li>${c.name} (${c.party})</li>`).join('')}
+                </ul>
+              </div>
+            `;
+          });
+        }
+        
+        // Refresh Elections Button
+        const refreshElectionsBtn = document.getElementById('refreshElections');
+        if (refreshElectionsBtn) {
+          refreshElectionsBtn.addEventListener('click', function() {
+            console.log('Refresh Elections button clicked');
+            
+            const activeElectionsDiv = document.getElementById('activeElections');
+            activeElectionsDiv.innerHTML = `
+              <div class="loading-indicator">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading elections...</p>
+              </div>
+            `;
+            
+            // Simulate loading
+            setTimeout(function() {
+              activeElectionsDiv.innerHTML = `
+                <div style="background-color: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                  <h3 style="color: #FFD700; margin-top: 0;">Sample Election 2025</h3>
+                  <p><strong>Period:</strong> 01/05/2025 - 10/05/2025</p>
+                  <p><strong>Status:</strong> <span style="background-color: rgba(255, 193, 7, 0.2); color: #ffc107; padding: 3px 8px; border-radius: 12px; font-size: 14px;">Upcoming</span></p>
+                  <p><strong>Candidates:</strong> 2</p>
+                  <button style="background-color: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-top: 10px;">View Details</button>
+                </div>
+              `;
+            }, 1500);
+          });
+          
+          // Trigger initial load
+          refreshElectionsBtn.click();
+        }
+      });
+    </script>
+  </body>
+</html>

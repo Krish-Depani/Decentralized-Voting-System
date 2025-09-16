@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<!--
+    MUT Voting System - Admin Interface
+    Simplified storage-based implementation
+    Developed by Zophlic (2025)
+-->
+<html>
+<head>
+    <title>MUT Voting System - Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #006400;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .date-group {
+            display: flex;
+            gap: 10px;
+        }
+        .date-group input {
+            width: 70px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .candidate {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #f44336;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .status {
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .election-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .election-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-ended {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MUT Voting System - Admin</h1>
+
+        <div id="metamask-status">
+            <button id="connect-btn">Connect to MetaMask</button>
+            <p id="account-info"></p>
+        </div>
+
+        <div id="admin-panel" style="display:none;">
+            <h2>Create New Election</h2>
+            <form id="election-form">
+                <div class="form-group">
+                    <label for="election-name">Election Name:</label>
+                    <input type="text" id="election-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Start Date (DD/MM/YYYY):</label>
+                    <div class="date-group">
+                        <input type="number" id="start-day" min="1" max="31" value="1" required>
+                        <span>/</span>
+                        <input type="number" id="start-month" min="1" max="12" value="5" required>
+                        <span>/</span>
+                        <input type="number" id="start-year" min="2025" max="2030" value="2025" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>End Date (DD/MM/YYYY):</label>
+                    <div class="date-group">
+                        <input type="number" id="end-day" min="1" max="31" value="10" required>
+                        <span>/</span>
+                        <input type="number" id="end-month" min="1" max="12" value="5" required>
+                        <span>/</span>
+                        <input type="number" id="end-year" min="2025" max="2030" value="2025" required>
+                    </div>
+                </div>
+
+                <h3>Candidates</h3>
+                <div id="candidates-container">
+                    <div class="candidate">
+                        <div class="form-group">
+                            <label>Candidate Name:</label>
+                            <input type="text" class="candidate-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Party/Position:</label>
+                            <input type="text" class="candidate-party" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="add-candidate-btn">Add Another Candidate</button>
+                <button type="submit">Create Election</button>
+            </form>
+
+            <div id="form-status" class="status" style="display:none;"></div>
+
+            <h2>Elections</h2>
+            <div id="elections-list"></div>
+
+            <div id="election-details" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * MUT Voting System - Admin Interface JavaScript
+         *
+         * This script provides a simplified implementation of the voting system using localStorage
+         * instead of blockchain for easier testing and demonstration purposes.
+         *
+         * Features:
+         * - MetaMask integration for authentication
+         * - Election creation with custom candidates
+         * - Real-time result tracking
+         * - Persistent storage using localStorage
+         *
+         * @author Zophlic
+         * @version 1.0.0
+         */
+
+        // Store elections in localStorage for persistence between sessions
+        let elections = JSON.parse(localStorage.getItem('elections') || '[]');
+        let account = null; // Current MetaMask account
+
+        // DOM Elements
+        const connectBtn = document.getElementById('connect-btn');
+        const accountInfo = document.getElementById('account-info');
+        const adminPanel = document.getElementById('admin-panel');
+        const electionForm = document.getElementById('election-form');
+        const addCandidateBtn = document.getElementById('add-candidate-btn');
+        const candidatesContainer = document.getElementById('candidates-container');
+        const formStatus = document.getElementById('form-status');
+        const electionsList = document.getElementById('elections-list');
+        const electionDetails = document.getElementById('election-details');
+
+        /**
+         * Connect to MetaMask wallet
+         * This function handles the MetaMask connection process and updates the UI accordingly
+         */
+        connectBtn.addEventListener('click', async () => {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    alert('MetaMask is not installed. Please install MetaMask to use this application.');
+                    return;
+                }
+
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (accounts.length > 0) {
+                    account = accounts[0];
+                    accountInfo.textContent = `Connected: ${account.substring(0, 6)}...${account.substring(38)}`;
+                    adminPanel.style.display = 'block';
+                    loadElections();
+                }
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
+                alert('Error connecting to MetaMask: ' + error.message);
+            }
+        });
+
+        /**
+         * Add a new candidate to the election form
+         * Creates a new candidate entry with name and party/position fields
+         * Includes a remove button for easy deletion
+         */
+        addCandidateBtn.addEventListener('click', () => {
+            const candidateDiv = document.createElement('div');
+            candidateDiv.className = 'candidate';
+            candidateDiv.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentNode.remove()">×</button>
+                <div class="form-group">
+                    <label>Candidate Name:</label>
+                    <input type="text" class="candidate-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Party/Position:</label>
+                    <input type="text" class="candidate-party" required>
+                </div>
+            `;
+            candidatesContainer.appendChild(candidateDiv);
+        });
+
+        /**
+         * Create a new election
+         * Collects form data, validates inputs, and stores the election in localStorage
+         * Handles the entire election creation process including candidate information
+         *
+         * @author Zophlic
+         */
+        electionForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Get form values
+            const electionName = document.getElementById('election-name').value;
+            const startDay = document.getElementById('start-day').value;
+            const startMonth = document.getElementById('start-month').value;
+            const startYear = document.getElementById('start-year').value;
+            const endDay = document.getElementById('end-day').value;
+            const endMonth = document.getElementById('end-month').value;
+            const endYear = document.getElementById('end-year').value;
+
+            // Format dates
+            const startDate = `${startDay}/${startMonth}/${startYear}`;
+            const endDate = `${endDay}/${endMonth}/${endYear}`;
+
+            // Get candidates
+            const candidates = [];
+            const candidateDivs = document.querySelectorAll('.candidate');
+
+            candidateDivs.forEach(div => {
+                const nameInput = div.querySelector('.candidate-name');
+                const partyInput = div.querySelector('.candidate-party');
+
+                if (nameInput && partyInput && nameInput.value && partyInput.value) {
+                    candidates.push({
+                        name: nameInput.value,
+                        party: partyInput.value,
+                        votes: 0
+                    });
+                }
+            });
+
+            // Validate form
+            if (!electionName) {
+                showStatus('error', 'Please enter an election name.');
+                return;
+            }
+
+            if (candidates.length < 2) {
+                showStatus('error', 'Please add at least two candidates.');
+                return;
+            }
+
+            // Create election object
+            const election = {
+                id: Date.now(), // Use timestamp as ID
+                name: electionName,
+                startDate: startDate,
+                endDate: endDate,
+                status: 'active',
+                candidates: candidates,
+                voters: [] // Track voters
+            };
+
+            // Add to elections array
+            elections.push(election);
+
+            // Save to localStorage
+            localStorage.setItem('elections', JSON.stringify(elections));
+
+            // Show success message
+            showStatus('success', `
+                <h3>Election Created Successfully!</h3>
+                <p><strong>Name:</strong> ${electionName}</p>
+                <p><strong>Period:</strong> ${startDate} to ${endDate}</p>
+                <p><strong>Candidates:</strong></p>
+                <ul>
+                    ${candidates.map(c => `<li>${c.name} (${c.party})</li>`).join('')}
+                </ul>
+            `);
+
+            // Reset form
+            electionForm.reset();
+
+            // Reset candidates (keep only the first one)
+            const firstCandidate = candidatesContainer.firstElementChild;
+            candidatesContainer.innerHTML = '';
+            candidatesContainer.appendChild(firstCandidate);
+
+            // Clear inputs in the first candidate
+            firstCandidate.querySelector('.candidate-name').value = '';
+            firstCandidate.querySelector('.candidate-party').value = '';
+
+            // Reload elections list
+            loadElections();
+        });
+
+        /**
+         * Display a status message to the user
+         * Shows success or error messages with appropriate styling
+         *
+         * @param {string} type - The type of message ('success' or 'error')
+         * @param {string} message - The message content (can include HTML)
+         */
+        function showStatus(type, message) {
+            formStatus.className = 'status ' + type;
+            formStatus.innerHTML = message;
+            formStatus.style.display = 'block';
+        }
+
+        /**
+         * Load and display all elections
+         * Retrieves elections from localStorage and renders them in the UI
+         * Shows status, period, and candidate count for each election
+         */
+        function loadElections() {
+            if (elections.length === 0) {
+                electionsList.innerHTML = '<p>No elections found.</p>';
+                return;
+            }
+
+            let html = '';
+
+            elections.forEach(election => {
+                let statusClass = '';
+                let statusText = '';
+
+                if (election.status === 'active') {
+                    statusClass = 'status-active';
+                    statusText = 'Active';
+                } else {
+                    statusClass = 'status-ended';
+                    statusText = 'Ended';
+                }
+
+                html += `
+                    <div class="election-card">
+                        <h3>${election.name}</h3>
+                        <p><strong>Period:</strong> ${election.startDate} to ${election.endDate}</p>
+                        <p><strong>Status:</strong> <span class="election-status ${statusClass}">${statusText}</span></p>
+                        <p><strong>Candidates:</strong> ${election.candidates.length}</p>
+                        <button onclick="viewElection(${election.id})">View Details</button>
+                    </div>
+                `;
+            });
+
+            electionsList.innerHTML = html;
+        }
+
+        /**
+         * View detailed election results
+         * Displays comprehensive information about an election including:
+         * - Candidate vote counts and percentages
+         * - Visual representation of results with progress bars
+         * - Total votes cast
+         *
+         * Implementation by Zophlic
+         *
+         * @param {number} id - The ID of the election to view
+         */
+        function viewElection(id) {
+            const election = elections.find(e => e.id === id);
+            if (!election) {
+                alert('Election not found.');
+                return;
+            }
+
+            // Calculate total votes
+            const totalVotes = election.candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
+
+            // Sort candidates by votes (descending)
+            const sortedCandidates = [...election.candidates].sort((a, b) => b.votes - a.votes);
+
+            let html = `
+                <h2>${election.name} - Details</h2>
+                <p><strong>Period:</strong> ${election.startDate} to ${election.endDate}</p>
+                <p><strong>Status:</strong> ${election.status === 'active' ? 'Active' : 'Ended'}</p>
+                <p><strong>Total Votes:</strong> ${totalVotes}</p>
+
+                <h3>Candidates</h3>
+                <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                    <tr style="background-color:#f2f2f2;">
+                        <th style="text-align:left; padding:8px; border:1px solid #ddd;">Name</th>
+                        <th style="text-align:left; padding:8px; border:1px solid #ddd;">Party/Position</th>
+                        <th style="text-align:right; padding:8px; border:1px solid #ddd;">Votes</th>
+                        <th style="text-align:right; padding:8px; border:1px solid #ddd;">Percentage</th>
+                    </tr>
+            `;
+
+            sortedCandidates.forEach(candidate => {
+                const percentage = totalVotes > 0 ? (candidate.votes / totalVotes * 100).toFixed(1) : '0.0';
+
+                html += `
+                    <tr>
+                        <td style="padding:8px; border:1px solid #ddd;">${candidate.name}</td>
+                        <td style="padding:8px; border:1px solid #ddd;">${candidate.party}</td>
+                        <td style="text-align:right; padding:8px; border:1px solid #ddd;">${candidate.votes}</td>
+                        <td style="text-align:right; padding:8px; border:1px solid #ddd;">${percentage}%</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                </table>
+
+                <h3>Results Visualization</h3>
+            `;
+
+            sortedCandidates.forEach(candidate => {
+                const percentage = totalVotes > 0 ? (candidate.votes / totalVotes * 100).toFixed(1) : '0.0';
+
+                html += `
+                    <div style="margin-bottom:15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <span>${candidate.name} (${candidate.party})</span>
+                            <span>${percentage}%</span>
+                        </div>
+                        <div style="height:20px; background-color:#f2f2f2; border-radius:10px; overflow:hidden;">
+                            <div style="height:100%; width:${percentage}%; background-color:#4CAF50; border-radius:10px;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <button onclick="loadElections(); electionDetails.style.display='none'; electionsList.style.display='block';">Back to Elections</button>
+            `;
+
+            electionDetails.innerHTML = html;
+            electionDetails.style.display = 'block';
+            electionsList.style.display = 'none';
+        }
+
+        // Initialize
+        window.viewElection = viewElection; // Make function available globally
+
+        // Check if already connected to MetaMask
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.request({ method: 'eth_accounts' })
+                .then(accounts => {
+                    if (accounts.length > 0) {
+                        account = accounts[0];
+                        accountInfo.textContent = `Connected: ${account.substring(0, 6)}...${account.substring(38)}`;
+                        adminPanel.style.display = 'block';
+                        loadElections();
+                    }
+                })
+                .catch(console.error);
+        }
+    </script>
+</body>
+</html>

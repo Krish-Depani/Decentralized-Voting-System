@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MetaMask Troubleshooting Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3 {
+            color: #006400;
+        }
+        
+        .container {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .step {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .step:last-child {
+            border-bottom: none;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .warning {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .tip {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        
+        img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>MetaMask Troubleshooting Guide</h1>
+    
+    <div class="container">
+        <h2>Quick Connection Test</h2>
+        <p>Click the button below to test your MetaMask connection:</p>
+        
+        <button id="testConnectionBtn">Test MetaMask Connection</button>
+        <div id="connectionStatus" class="status" style="display: none;"></div>
+    </div>
+    
+    <div class="container">
+        <h2>Common MetaMask Issues and Solutions</h2>
+        
+        <div class="step">
+            <h3><span class="step-number">1</span> MetaMask Not Installed</h3>
+            <p>If you don't have MetaMask installed, you'll need to install it first:</p>
+            <ol>
+                <li>Visit <a href="https://metamask.io/download/" target="_blank">https://metamask.io/download/</a></li>
+                <li>Choose your browser and follow the installation instructions</li>
+                <li>Create a new wallet or import an existing one</li>
+                <li>Refresh this page after installation</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">2</span> MetaMask Not Connected to Ganache</h3>
+            <p>You need to configure MetaMask to connect to your local Ganache blockchain:</p>
+            <ol>
+                <li>Open MetaMask</li>
+                <li>Click the network dropdown at the top (usually says "Ethereum Mainnet")</li>
+                <li>Click "Add Network" or "Custom RPC"</li>
+                <li>Enter the following details:
+                    <ul>
+                        <li><strong>Network Name:</strong> Localhost 7545</li>
+                        <li><strong>New RPC URL:</strong> http://localhost:7545</li>
+                        <li><strong>Chain ID:</strong> 1337 (or 5777 depending on your Ganache configuration)</li>
+                        <li><strong>Currency Symbol:</strong> ETH</li>
+                    </ul>
+                </li>
+                <li>Click "Save"</li>
+            </ol>
+            
+            <div class="note">
+                <strong>Note:</strong> Make sure Ganache is running before adding the network.
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">3</span> No Accounts Imported from Ganache</h3>
+            <p>You need to import at least one account from Ganache into MetaMask:</p>
+            <ol>
+                <li>In Ganache, click on the key icon next to an account to reveal its private key</li>
+                <li>Copy the private key</li>
+                <li>In MetaMask, click your account icon in the top-right corner</li>
+                <li>Select "Import Account"</li>
+                <li>Paste the private key and click "Import"</li>
+            </ol>
+            
+            <div class="warning">
+                <strong>Warning:</strong> Never use these imported accounts on the main Ethereum network. They should only be used for local development.
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">4</span> MetaMask is Locked</h3>
+            <p>If MetaMask is locked, you'll need to unlock it:</p>
+            <ol>
+                <li>Click the MetaMask icon in your browser</li>
+                <li>Enter your password</li>
+                <li>Click "Unlock"</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">5</span> Reset MetaMask Account</h3>
+            <p>If you're still having issues, try resetting your MetaMask account:</p>
+            <ol>
+                <li>Open MetaMask</li>
+                <li>Click your account icon → Settings → Advanced</li>
+                <li>Scroll down and click "Reset Account"</li>
+                <li>Confirm the reset</li>
+            </ol>
+            
+            <div class="note">
+                <strong>Note:</strong> This will clear your transaction history but keep your accounts.
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">6</span> Check Ganache Configuration</h3>
+            <p>Make sure Ganache is properly configured:</p>
+            <ol>
+                <li>Ganache should be running on port 7545</li>
+                <li>Chain ID should be set to 1337 (or 5777)</li>
+                <li>Auto-mining should be enabled</li>
+            </ol>
+            
+            <div class="tip">
+                <strong>Tip:</strong> You can create a workspace in Ganache and save these settings for future use.
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">7</span> Check Truffle Configuration</h3>
+            <p>Your <code>truffle-config.js</code> should match your Ganache settings:</p>
+            <pre>module.exports = {
+  networks: {
+    development: {
+      host: "127.0.0.1",
+      port: 7545,
+      network_id: "*" // Match any network id
+    }
+  }
+};</pre>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">8</span> Browser Issues</h3>
+            <p>Try these browser-related fixes:</p>
+            <ul>
+                <li>Clear your browser cache and cookies</li>
+                <li>Try a different browser</li>
+                <li>Disable other extensions that might interfere with MetaMask</li>
+                <li>Try using a private/incognito window</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Test MetaMask connection
+        document.getElementById('testConnectionBtn').addEventListener('click', async function() {
+            const statusDiv = document.getElementById('connectionStatus');
+            statusDiv.style.display = 'block';
+            
+            try {
+                // Check if MetaMask is installed
+                if (typeof window.ethereum === 'undefined') {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = 'MetaMask is not installed. Please install MetaMask extension and refresh this page.';
+                    return;
+                }
+                
+                statusDiv.className = 'status';
+                statusDiv.textContent = 'Connecting to MetaMask...';
+                
+                // Request account access
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
+                if (accounts.length > 0) {
+                    // Get chain ID
+                    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                    
+                    // Determine network name
+                    let networkName = 'Unknown Network';
+                    switch (chainId) {
+                        case '0x1':
+                            networkName = 'Ethereum Mainnet';
+                            break;
+                        case '0x3':
+                            networkName = 'Ropsten Testnet';
+                            break;
+                        case '0x4':
+                            networkName = 'Rinkeby Testnet';
+                            break;
+                        case '0x5':
+                            networkName = 'Goerli Testnet';
+                            break;
+                        case '0x539':
+                            networkName = 'Ganache Local';
+                            break;
+                        default:
+                            networkName = 'Local Network (' + chainId + ')';
+                    }
+                    
+                    // Success
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = `
+                        <h3>Successfully Connected to MetaMask!</h3>
+                        <p><strong>Account:</strong> ${accounts[0]}</p>
+                        <p><strong>Network:</strong> ${networkName} (Chain ID: ${chainId})</p>
+                    `;
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = 'No accounts found. Please unlock MetaMask.';
+                }
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
+                statusDiv.className = 'status error';
+                statusDiv.textContent = 'Error connecting to MetaMask: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
-var Voting = artifacts.require("Voting")
+var Migrations = artifacts.require("Migrations")
 
 module.exports = function(deployer) {
-  deployer.deploy(Voting)
+  deployer.deploy(Migrations)
 }

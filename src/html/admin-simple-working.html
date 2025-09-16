@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Working Admin Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #006400;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .date-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .date-group input {
+            width: 80px;
+            text-align: center;
+        }
+        
+        .date-separator {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .candidate {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-secondary {
+            background-color: #2196F3;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #0b7dda;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+        
+        .metamask-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        
+        .connected {
+            color: #4CAF50;
+        }
+        
+        .not-connected {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="metamask-status not-connected" id="metamaskStatus" onclick="connectMetaMask()">
+        MetaMask: Not Connected
+    </div>
+    
+    <div class="container">
+        <h1>Murang'a University Voting System</h1>
+        <h2>Create New Election</h2>
+        
+        <form id="electionForm">
+            <div class="form-group">
+                <label for="electionName">Election Name:</label>
+                <input type="text" id="electionName" name="electionName" placeholder="e.g., Student Council Elections 2025" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Start Date (DD/MM/YYYY):</label>
+                <div class="date-group">
+                    <input type="number" id="startDay" name="startDay" min="1" max="31" placeholder="DD" value="1" required>
+                    <span class="date-separator">/</span>
+                    <input type="number" id="startMonth" name="startMonth" min="1" max="12" placeholder="MM" value="5" required>
+                    <span class="date-separator">/</span>
+                    <input type="number" id="startYear" name="startYear" min="2025" max="2030" placeholder="YYYY" value="2025" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>End Date (DD/MM/YYYY):</label>
+                <div class="date-group">
+                    <input type="number" id="endDay" name="endDay" min="1" max="31" placeholder="DD" value="10" required>
+                    <span class="date-separator">/</span>
+                    <input type="number" id="endMonth" name="endMonth" min="1" max="12" placeholder="MM" value="5" required>
+                    <span class="date-separator">/</span>
+                    <input type="number" id="endYear" name="endYear" min="2025" max="2030" placeholder="YYYY" value="2025" required>
+                </div>
+            </div>
+            
+            <h3>Candidates</h3>
+            <div id="candidatesContainer">
+                <div class="candidate">
+                    <div class="form-group">
+                        <label>Candidate Name:</label>
+                        <input type="text" name="candidateName[]" placeholder="Candidate's name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Party/Position:</label>
+                        <input type="text" name="candidateParty[]" placeholder="Party or Position" required>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" onclick="addCandidate()">Add Another Candidate</button>
+            <br><br>
+            <button type="submit" id="submitBtn">Create Election</button>
+        </form>
+        
+        <div id="status" class="status"></div>
+    </div>
+    
+    <script>
+        // Global variables
+        let isConnected = false;
+        let account = null;
+        
+        // Connect to MetaMask
+        async function connectMetaMask() {
+            const metamaskStatus = document.getElementById('metamaskStatus');
+            
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    
+                    if (accounts.length > 0) {
+                        account = accounts[0];
+                        isConnected = true;
+                        
+                        metamaskStatus.className = 'metamask-status connected';
+                        metamaskStatus.textContent = `MetaMask: Connected (${accounts[0].substring(0, 6)}...${accounts[0].substring(38)})`;
+                        
+                        // Show success message
+                        const status = document.getElementById('status');
+                        status.className = 'status success';
+                        status.textContent = 'Successfully connected to MetaMask!';
+                        
+                        // Clear message after 3 seconds
+                        setTimeout(() => {
+                            status.className = 'status';
+                            status.textContent = '';
+                        }, 3000);
+                        
+                        return true;
+                    }
+                } catch (error) {
+                    console.error('Error connecting to MetaMask:', error);
+                    
+                    metamaskStatus.className = 'metamask-status not-connected';
+                    metamaskStatus.textContent = 'MetaMask: Connection Error';
+                    
+                    // Show error message
+                    const status = document.getElementById('status');
+                    status.className = 'status error';
+                    status.textContent = 'Error connecting to MetaMask: ' + error.message;
+                }
+            } else {
+                alert('MetaMask is not installed. Please install MetaMask to use this application.');
+                
+                metamaskStatus.className = 'metamask-status not-connected';
+                metamaskStatus.textContent = 'MetaMask: Not Installed';
+            }
+            
+            return false;
+        }
+        
+        // Add candidate
+        function addCandidate() {
+            const container = document.getElementById('candidatesContainer');
+            const newCandidate = document.createElement('div');
+            newCandidate.className = 'candidate';
+            
+            newCandidate.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentNode.remove()">&times;</button>
+                <div class="form-group">
+                    <label>Candidate Name:</label>
+                    <input type="text" name="candidateName[]" placeholder="Candidate's name" required>
+                </div>
+                <div class="form-group">
+                    <label>Party/Position:</label>
+                    <input type="text" name="candidateParty[]" placeholder="Party or Position" required>
+                </div>
+            `;
+            
+            container.appendChild(newCandidate);
+        }
+        
+        // Form submission
+        document.getElementById('electionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            // Check if connected to MetaMask
+            if (!isConnected) {
+                const connected = await connectMetaMask();
+                if (!connected) {
+                    const status = document.getElementById('status');
+                    status.className = 'status error';
+                    status.textContent = 'Please connect to MetaMask first.';
+                    return;
+                }
+            }
+            
+            // Get form data
+            const electionName = document.getElementById('electionName').value;
+            const startDay = document.getElementById('startDay').value;
+            const startMonth = document.getElementById('startMonth').value;
+            const startYear = document.getElementById('startYear').value;
+            const endDay = document.getElementById('endDay').value;
+            const endMonth = document.getElementById('endMonth').value;
+            const endYear = document.getElementById('endYear').value;
+            
+            // Format dates
+            const startDate = `${startDay}/${startMonth}/${startYear}`;
+            const endDate = `${endDay}/${endMonth}/${endYear}`;
+            
+            // Get candidates
+            const candidateNames = document.getElementsByName('candidateName[]');
+            const candidateParties = document.getElementsByName('candidateParty[]');
+            const candidates = [];
+            
+            for (let i = 0; i < candidateNames.length; i++) {
+                if (candidateNames[i].value && candidateParties[i].value) {
+                    candidates.push({
+                        name: candidateNames[i].value,
+                        party: candidateParties[i].value
+                    });
+                }
+            }
+            
+            // Validate form
+            if (!electionName) {
+                showError('Please enter an election name.');
+                return;
+            }
+            
+            if (!startDay || !startMonth || !startYear) {
+                showError('Please enter a complete start date.');
+                return;
+            }
+            
+            if (!endDay || !endMonth || !endYear) {
+                showError('Please enter a complete end date.');
+                return;
+            }
+            
+            if (candidates.length === 0) {
+                showError('Please add at least one candidate.');
+                return;
+            }
+            
+            // Disable submit button
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Election...';
+            
+            // Simulate blockchain interaction
+            setTimeout(() => {
+                // Show success message
+                const status = document.getElementById('status');
+                status.className = 'status success';
+                status.innerHTML = `
+                    <h3>Election Created Successfully!</h3>
+                    <p><strong>Name:</strong> ${electionName}</p>
+                    <p><strong>Period:</strong> ${startDate} to ${endDate}</p>
+                    <p><strong>Candidates:</strong></p>
+                    <ul>
+                        ${candidates.map(c => `<li>${c.name} (${c.party})</li>`).join('')}
+                    </ul>
+                `;
+                
+                // Reset form
+                document.getElementById('electionForm').reset();
+                
+                // Reset candidates (keep only the first one)
+                const container = document.getElementById('candidatesContainer');
+                const firstCandidate = container.firstElementChild;
+                container.innerHTML = '';
+                container.appendChild(firstCandidate);
+                
+                // Clear inputs in the first candidate
+                firstCandidate.querySelector('input[name="candidateName[]"]').value = '';
+                firstCandidate.querySelector('input[name="candidateParty[]"]').value = '';
+                
+                // Reset default dates
+                document.getElementById('startDay').value = '1';
+                document.getElementById('startMonth').value = '5';
+                document.getElementById('startYear').value = '2025';
+                document.getElementById('endDay').value = '10';
+                document.getElementById('endMonth').value = '5';
+                document.getElementById('endYear').value = '2025';
+                
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Election';
+            }, 2000);
+        });
+        
+        // Show error message
+        function showError(message) {
+            const status = document.getElementById('status');
+            status.className = 'status error';
+            status.textContent = message;
+        }
+        
+        // Try to connect to MetaMask on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Check if MetaMask is already connected
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        account = accounts[0];
+                        isConnected = true;
+                        
+                        const metamaskStatus = document.getElementById('metamaskStatus');
+                        metamaskStatus.className = 'metamask-status connected';
+                        metamaskStatus.textContent = `MetaMask: Connected (${accounts[0].substring(0, 6)}...${accounts[0].substring(38)})`;
+                    }
+                } catch (error) {
+                    console.error('Error checking MetaMask connection:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

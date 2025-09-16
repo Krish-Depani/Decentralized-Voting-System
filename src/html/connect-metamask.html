@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Connect to MetaMask</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        button {
+            background-color: #0070f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        
+        #status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Connect to MetaMask</h1>
+    
+    <p>Click the button below to connect to MetaMask:</p>
+    
+    <button id="connectButton">Connect to MetaMask</button>
+    
+    <div id="status" style="display: none;"></div>
+    
+    <div id="accountInfo"></div>
+    
+    <script>
+        // Simple function to connect to MetaMask
+        async function connectToMetaMask() {
+            const statusDiv = document.getElementById('status');
+            const accountInfoDiv = document.getElementById('accountInfo');
+            
+            statusDiv.style.display = 'block';
+            
+            try {
+                // Check if MetaMask is installed
+                if (typeof window.ethereum === 'undefined') {
+                    statusDiv.className = 'error';
+                    statusDiv.textContent = 'MetaMask is not installed. Please install MetaMask extension and refresh this page.';
+                    return;
+                }
+                
+                console.log('Requesting accounts...');
+                
+                // Request account access
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
+                console.log('Accounts:', accounts);
+                
+                if (accounts.length > 0) {
+                    // Success
+                    statusDiv.className = 'success';
+                    statusDiv.textContent = 'Successfully connected to MetaMask!';
+                    
+                    // Display account info
+                    accountInfoDiv.innerHTML = `
+                        <h3>Connected Account</h3>
+                        <p>${accounts[0]}</p>
+                    `;
+                } else {
+                    statusDiv.className = 'error';
+                    statusDiv.textContent = 'No accounts found. Please unlock MetaMask.';
+                }
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
+                statusDiv.className = 'error';
+                statusDiv.textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        // Add click event listener to the connect button
+        document.getElementById('connectButton').addEventListener('click', connectToMetaMask);
+    </script>
+</body>
+</html>

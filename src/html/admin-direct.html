@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUT Voting System - Direct Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1b5e20;
+            --secondary-color: #43a047;
+            --accent-color: #81c784;
+            --text-color: #FFFFFF;
+            --background-dark: rgba(27, 94, 32, 0.75);
+            --background-medium: rgba(67, 160, 71, 0.6);
+            --background-light: rgba(129, 199, 132, 0.4);
+            --mut-gold: #FFD700;
+            --mut-light-gold: rgba(255, 215, 0, 0.7);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            border: 3px solid var(--mut-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: var(--mut-gold);
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .header-text h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--mut-gold);
+        }
+        
+        .header-text h2 {
+            margin: 5px 0 0 0;
+            font-size: 18px;
+            font-weight: 400;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+        }
+        
+        .date-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .date-inputs input {
+            width: 70px;
+            text-align: center;
+        }
+        
+        .date-inputs input[type="number"]::-webkit-inner-spin-button,
+        .date-inputs input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .date-separator {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .candidates-container {
+            margin-top: 20px;
+        }
+        
+        .candidate-entry {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .candidate-entry .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary {
+            background-color: var(--accent-color);
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #a5d6a7;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            color: #2e7d32;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            color: #c62828;
+        }
+        
+        .elections-list {
+            margin-top: 20px;
+        }
+        
+        .election-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .election-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        
+        .election-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #2e7d32;
+        }
+        
+        .status-upcoming {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #f57f17;
+        }
+        
+        .status-ended {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #c62828;
+        }
+        
+        .metamask-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .metamask-status .icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .connected {
+            color: #4CAF50;
+        }
+        
+        .not-connected {
+            color: #f44336;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">MUT</div>
+        <div class="header-text">
+            <h1>Murang'a University of Technology</h1>
+            <h2>Decentralized Voting System - Admin Portal</h2>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Create New Election</h2>
+        <form id="electionForm">
+            <div class="form-group">
+                <label for="electionName">Election Name</label>
+                <input type="text" id="electionName" placeholder="e.g., Student Council Elections 2025" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Start Date (DD/MM/YYYY)</label>
+                <div class="date-inputs">
+                    <input type="number" id="startDay" min="1" max="31" placeholder="DD" value="1" required>
+                    <span class="date-separator">/</span>
+                    <input type="number" id="startMonth" min="1" max="12" placeholder="MM" value="5" required>
+                    <span class="date-separator">/</span>
+                    <input type="number" id="startYear" min="2025" max="2030" placeholder="YYYY" value="2025" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>End Date (DD/MM/YYYY)</label>
+                <div class="date-inputs">
+                    <input type="number" id="endDay" min="1" max="31" placeholder="DD" value="10" required>
+                    <span class="date-separator">/</span>
+                    <input type="number" id="endMonth" min="1" max="12" placeholder="MM" value="5" required>
+                    <span class="date-separator">/</span>
+                    <input type="number" id="endYear" min="2025" max="2030" placeholder="YYYY" value="2025" required>
+                </div>
+            </div>
+            
+            <h3>Candidates</h3>
+            <div class="candidates-container" id="candidatesContainer">
+                <div class="candidate-entry">
+                    <div class="form-group">
+                        <label>Candidate Name</label>
+                        <input type="text" class="candidate-name" placeholder="Candidate's name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Party/Position</label>
+                        <input type="text" class="candidate-party" placeholder="Party or Position" required>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" id="addCandidateBtn" class="btn btn-secondary">
+                <i class="fas fa-plus-circle"></i> Add Another Candidate
+            </button>
+            
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check-circle"></i> Create Election
+                </button>
+            </div>
+            
+            <div id="electionStatus" class="status-message"></div>
+        </form>
+    </div>
+    
+    <div class="container">
+        <h2>Election Management</h2>
+        <div class="elections-list" id="electionsList">
+            <p>Loading elections...</p>
+        </div>
+    </div>
+    
+    <div class="metamask-status not-connected" id="metamaskStatus">
+        <i class="fab fa-ethereum icon"></i>
+        <span>MetaMask not connected</span>
+    </div>
+    
+    <div class="footer">
+        &copy; 2025 Murang'a University of Technology - Decentralized Voting System
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // MetaMask Connection
+            const metamaskStatus = document.getElementById('metamaskStatus');
+            
+            async function connectMetaMask() {
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        if (accounts.length > 0) {
+                            metamaskStatus.className = 'metamask-status connected';
+                            metamaskStatus.innerHTML = `
+                                <i class="fab fa-ethereum icon"></i>
+                                <span>Connected: ${accounts[0].substring(0, 6)}...${accounts[0].substring(38)}</span>
+                            `;
+                            return true;
+                        }
+                    } catch (error) {
+                        console.error('Error connecting to MetaMask:', error);
+                        metamaskStatus.className = 'metamask-status not-connected';
+                        metamaskStatus.innerHTML = `
+                            <i class="fab fa-ethereum icon"></i>
+                            <span>Error: ${error.message}</span>
+                        `;
+                    }
+                } else {
+                    alert('MetaMask is not installed. Please install MetaMask to use this application.');
+                    metamaskStatus.className = 'metamask-status not-connected';
+                    metamaskStatus.innerHTML = `
+                        <i class="fab fa-ethereum icon"></i>
+                        <span>MetaMask not installed</span>
+                    `;
+                }
+                return false;
+            }
+            
+            // Try to connect to MetaMask automatically
+            connectMetaMask();
+            
+            // Add click handler to MetaMask status to reconnect
+            metamaskStatus.addEventListener('click', connectMetaMask);
+            
+            // Add Candidate Button
+            const addCandidateBtn = document.getElementById('addCandidateBtn');
+            const candidatesContainer = document.getElementById('candidatesContainer');
+            
+            addCandidateBtn.addEventListener('click', function() {
+                const newCandidate = document.createElement('div');
+                newCandidate.className = 'candidate-entry';
+                newCandidate.innerHTML = `
+                    <button type="button" class="remove-btn">&times;</button>
+                    <div class="form-group">
+                        <label>Candidate Name</label>
+                        <input type="text" class="candidate-name" placeholder="Candidate's name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Party/Position</label>
+                        <input type="text" class="candidate-party" placeholder="Party or Position" required>
+                    </div>
+                `;
+                candidatesContainer.appendChild(newCandidate);
+                
+                // Add remove button handler
+                const removeBtn = newCandidate.querySelector('.remove-btn');
+                removeBtn.addEventListener('click', function() {
+                    candidatesContainer.removeChild(newCandidate);
+                });
+            });
+            
+            // Form Submission
+            const electionForm = document.getElementById('electionForm');
+            const electionStatus = document.getElementById('electionStatus');
+            
+            electionForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                
+                // Check MetaMask connection
+                const isConnected = await connectMetaMask();
+                if (!isConnected) {
+                    electionStatus.className = 'status-message error';
+                    electionStatus.textContent = 'Please connect to MetaMask first';
+                    return;
+                }
+                
+                // Get form values
+                const electionName = document.getElementById('electionName').value;
+                const startDay = document.getElementById('startDay').value;
+                const startMonth = document.getElementById('startMonth').value;
+                const startYear = document.getElementById('startYear').value;
+                const endDay = document.getElementById('endDay').value;
+                const endMonth = document.getElementById('endMonth').value;
+                const endYear = document.getElementById('endYear').value;
+                
+                // Format dates
+                const startDate = `${startDay}/${startMonth}/${startYear}`;
+                const endDate = `${endDay}/${endMonth}/${endYear}`;
+                
+                // Get candidates
+                const candidateEntries = document.querySelectorAll('.candidate-entry');
+                const candidates = [];
+                
+                candidateEntries.forEach(function(entry) {
+                    const nameInput = entry.querySelector('.candidate-name');
+                    const partyInput = entry.querySelector('.candidate-party');
+                    
+                    if (nameInput && partyInput && nameInput.value && partyInput.value) {
+                        candidates.push({
+                            name: nameInput.value,
+                            party: partyInput.value
+                        });
+                    }
+                });
+                
+                // Validate form
+                if (!electionName) {
+                    electionStatus.className = 'status-message error';
+                    electionStatus.textContent = 'Please enter an election name';
+                    return;
+                }
+                
+                if (candidates.length < 2) {
+                    electionStatus.className = 'status-message error';
+                    electionStatus.textContent = 'Please add at least two candidates';
+                    return;
+                }
+                
+                // Show success message
+                electionStatus.className = 'status-message success';
+                electionStatus.innerHTML = `
+                    <h4>Election Created Successfully!</h4>
+                    <p><strong>Name:</strong> ${electionName}</p>
+                    <p><strong>Period:</strong> ${startDate} - ${endDate}</p>
+                    <p><strong>Candidates:</strong> ${candidates.length}</p>
+                    <ul style="text-align: left; padding-left: 20px;">
+                        ${candidates.map(c => `<li>${c.name} (${c.party})</li>`).join('')}
+                    </ul>
+                `;
+                
+                // Reset form after 5 seconds
+                setTimeout(function() {
+                    electionForm.reset();
+                    
+                    // Remove all candidate entries except the first one
+                    const candidateEntries = document.querySelectorAll('.candidate-entry');
+                    for (let i = 1; i < candidateEntries.length; i++) {
+                        candidatesContainer.removeChild(candidateEntries[i]);
+                    }
+                    
+                    // Clear the first candidate's inputs
+                    const firstCandidate = document.querySelector('.candidate-entry');
+                    if (firstCandidate) {
+                        firstCandidate.querySelector('.candidate-name').value = '';
+                        firstCandidate.querySelector('.candidate-party').value = '';
+                    }
+                    
+                    // Clear status message
+                    electionStatus.innerHTML = '';
+                    electionStatus.className = 'status-message';
+                    
+                    // Update elections list
+                    loadElections();
+                }, 5000);
+            });
+            
+            // Load Elections
+            function loadElections() {
+                const electionsList = document.getElementById('electionsList');
+                
+                // Simulate loading
+                electionsList.innerHTML = '<p>Loading elections...</p>';
+                
+                setTimeout(function() {
+                    // Sample data
+                    const elections = [
+                        {
+                            id: 1,
+                            name: 'Student Council Elections 2025',
+                            startDate: '01/05/2025',
+                            endDate: '10/05/2025',
+                            status: 'upcoming',
+                            candidates: 4
+                        },
+                        {
+                            id: 2,
+                            name: 'Department Representatives',
+                            startDate: '15/04/2025',
+                            endDate: '20/04/2025',
+                            status: 'ended',
+                            candidates: 8
+                        },
+                        {
+                            id: 3,
+                            name: 'Sports Committee Election',
+                            startDate: '01/03/2025',
+                            endDate: '05/03/2025',
+                            status: 'ended',
+                            candidates: 6
+                        }
+                    ];
+                    
+                    if (elections.length === 0) {
+                        electionsList.innerHTML = '<p>No elections found. Create your first election above.</p>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    
+                    elections.forEach(function(election) {
+                        let statusClass = '';
+                        let statusText = '';
+                        
+                        switch (election.status) {
+                            case 'active':
+                                statusClass = 'status-active';
+                                statusText = 'Active';
+                                break;
+                            case 'upcoming':
+                                statusClass = 'status-upcoming';
+                                statusText = 'Upcoming';
+                                break;
+                            case 'ended':
+                                statusClass = 'status-ended';
+                                statusText = 'Ended';
+                                break;
+                        }
+                        
+                        html += `
+                            <div class="election-card">
+                                <h3>${election.name}</h3>
+                                <p><strong>Period:</strong> ${election.startDate} - ${election.endDate}</p>
+                                <p><strong>Status:</strong> <span class="election-status ${statusClass}">${statusText}</span></p>
+                                <p><strong>Candidates:</strong> ${election.candidates}</p>
+                                <button class="btn btn-primary">View Details</button>
+                            </div>
+                        `;
+                    });
+                    
+                    electionsList.innerHTML = html;
+                }, 1500);
+            }
+            
+            // Load elections on page load
+            loadElections();
+        });
+    </script>
+</body>
+</html>
